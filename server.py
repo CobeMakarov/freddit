@@ -9,9 +9,7 @@ from werkzeug import check_password_hash, generate_password_hash
 app = Flask(__name__)
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
-sql = {"host": "localhost", "port": 5432, "username": "obiwan", "password": "", "database": "fred"}
-
-db = database(sql["host"], sql["username"], sql["password"], sql["database"], sql["port"])
+db = database()
 
 client = ""
 

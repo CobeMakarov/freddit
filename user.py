@@ -56,7 +56,7 @@ class user:
 
             sub = subfreddit(sub_id, self.db)
 
-            if not misc.objinlist("path", sub.path, self.subfreddits):
+            if not misc.objinlist("path", sub.path, self.subfreddits):  ##lazy fix for shit
                 self.subfreddits.append(sub)
 
     def calculateKarma(self):

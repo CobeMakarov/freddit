@@ -1,5 +1,5 @@
 import psycopg2, psycopg2.extras
-
+from lib.config import config
 
 class database:
     host, username, password, database = "", "", "", ""
@@ -9,15 +9,15 @@ class database:
 
     cursor = ""
 
-    def __init__(self, h, u, p, d, port):
-        self.host = h;
+    def __init__(self):
+        self.host = config.database["host"]
 
-        self.username = u;
-        self.password = p;
+        self.username = config.database["username"]
+        self.password = config.database["password"]
 
-        self.database = d;
+        self.database = config.database["database"]
 
-        self.port = port;
+        self.port = config.database["port"]
 
     def connect(self):
         try:
