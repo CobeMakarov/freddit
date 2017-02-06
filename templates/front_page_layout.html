@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Freddit: Front Page</title>
+
+        {% if client.night %}
+        <link rel="stylesheet" href="../static/styles/dark-bootstrap.css">
+        {% else %}
+        <link rel="stylesheet" href="../static/styles/light-bootstrap.css">
+        {% endif %}
+    </head>
+    <body>
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Freddit</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        {% for sub in subfreddits %}
+                        <li><a href="/fr/{{sub.path}}">{{sub.path}}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {{client.username}}
+                                {% if client.karma > 0 %}
+                                    <span class="label label-success inline-block">{{client.karma}}</span>
+                                {% elif client.karma < 0 %}
+                                    <span class="label label-danger inline-block">{{client.karma}}</span>
+                                {% elif client.karma == 0 %}
+                                    <span class="label label-primary inline-block">{{client.karma}}</span>
+                                {% endif %}
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/settings">Settings</a></li>
+                                <li><a href="/settings/create">Create Subfreddit</a></li>
+                                <!-- modded subs here -->
+                                <li class="divider"></li>
+                                <li><a href="/logout">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                {%block content %}{% endblock %}
+            </div>
+            <footer>&copy Shacobe Johnson</footer>
+        </div>
+    </body>
+    <script src="../static/scripts/jquery.js"></script>
+    <script src="../static/scripts/bootstrap.js"></script>
+    <script src="../static/scripts/bootbox.min.js"></script>
+    <script src="../static/scripts/settings.js"></script>
+</html>

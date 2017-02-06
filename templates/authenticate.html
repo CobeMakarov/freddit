@@ -1,0 +1,70 @@
+{% extends "authenticate_layout.html" %}
+
+{% block content %}
+    <div class="well" id="login-form" style="margin-top:-150%">
+        <form class="form-horizontal" id="login-layout">
+            <legend>Log In</legend>
+            <div class="form-group">
+                <label for="loginEmail" class="col-lg-3 control-label">Email</label>
+                <div class="col-lg-8">
+                    <input type="text" class="form-control" id="loginEmail" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword" class="col-lg-3 control-label">Password</label>
+                <div class="col-lg-8">
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                </div>
+            </div>
+            <div class="col-lg-2"></div>
+            <div class="col-lg-10">
+                <button type="button" class="btn btn-link" id="showRegister" style="padding: 0 5px 0 5px;">Create an
+                    Account
+                </button>
+                <button type="button" class="btn btn-info" id="completeLogin">Sign In</button>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+        <form class="form-horizontal" id="register-layout" style="display:none;">
+            <legend>Create an Account</legend>
+            <div class="form-group">
+                <label for="registerUsername" class="col-lg-3 control-label">Username</label>
+                <div class="col-lg-8">
+                    <input type="text" class="form-control" id="registerUsername" placeholder="Username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail" class="col-lg-3 control-label">Email</label>
+                <div class="col-lg-8">
+                    <input type="text" class="form-control" id="registerEmail" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword" class="col-lg-3 control-label">Password</label>
+                <div class="col-lg-8">
+                    <input type="password" class="form-control" id="registerPassword" placeholder="Password">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword2" class="col-lg-3 control-label">Password</label>
+                <div class="col-lg-8">
+                    <input type="password" class="form-control" id="registerPassword2" placeholder="Password (again)">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="registerNightMode"> Night Mode
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-2"></div>
+            <div class="col-lg-10">
+                <button type="button" class="btn btn-link" id="showLogin" style="padding: 0 5px 0 15px;">Have an account?
+                </button>
+                <button type="button" class="btn btn-info" id="completeRegister">Create</button>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+    </div>
+{% endblock %}
+

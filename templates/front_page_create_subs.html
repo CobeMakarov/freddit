@@ -1,0 +1,75 @@
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+    <div class="col-md-4">
+        <div class="well">
+            <form class="form-horizontal" id="login-layout">
+                <legend>Create Subfreddit</legend>
+                <div class="form-group">
+                    <label for="subTitle" class="col-lg-3 control-label">Title</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="subTitle" placeholder="Title of Subfreddit">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subDesc" class="col-lg-3 control-label">Path</label>
+                    <div class="col-lg-8">
+                        <textarea class="form-control" rows="3" id="subDesc" placeholder="Desc of Subfreddit"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subPath" class="col-lg-3 control-label">Path</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="subPath" placeholder="Path of Subfreddit">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="subPrivate"> Private
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-12">
+                        <p>
+                            A Subfreddit is a sub-category used for dicussion. The discussion can include anything that is relevant
+                            to the theme of the subfreddit.
+                        </p>
+                        <p>
+                            The <b>title</b> field is the text that will show in the title of the site
+                            when visiting the sub.
+                        </p>
+                        <p>
+                            The <b>path</b> field is the path needed to access the sub freddit.com/fr/<b>path</b>.
+                            The <b>path</b> can only contain letters and has a max length of <b>30</b> characters.
+                        </p>
+                        <p>
+                            A sub can be <b>private</b>. By this, this means only you can access the sub.
+                            Eventually you will be able to invite users to access your subfreddit!
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-7"></div>
+                <div class="col-lg-5">
+                    <button type="button" class="btn btn-info" id="completeCreation">Create</button>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="well">
+            <b>{{client.username}}</b>
+            {% if client.karma > 0 %}
+                <span class="label label-success inline-block">{{client.karma}}</span>
+            {% elif client.karma < 0 %}
+                <span class="label label-danger inline-block">{{client.karma}}</span>
+            {% elif client.karma == 0 %}
+                <span class="label label-primary inline-block">{{client.karma}}</span>
+            {% endif %}
+            <br />
+
+        </div>
+    </div>
+{% endblock %}
+
