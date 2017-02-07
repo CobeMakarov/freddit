@@ -19,6 +19,8 @@ class database:
 
         self.port = config.database["port"]
 
+        self.connect()
+
     def connect(self):
         try:
             self.conn = psycopg2.connect(host=self.host, port=self.port,

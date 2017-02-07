@@ -16,8 +16,6 @@ client = ""
 @app.route('/')
 def renderFrontPage():
 
-    db.connect()
-
     if session.get('authenticated'):
         userId = session['user_id']
         client = user(userId, db)
@@ -27,7 +25,8 @@ def renderFrontPage():
         if client.night:
             print("[Site Log] " + client.username + " has dark mode enabled, let's enable it sitewide.")
 
-        return render_template('front_page.html', client=client, posts=client.buildFrontPage(), subfreddits=client.subfreddits)
+        return render_template('front_page.html',
+                               client=client, posts=client.buildFrontPage(), subfreddits=client.subfreddits)
 
     return render_template('authenticate.html')
 
