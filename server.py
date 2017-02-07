@@ -90,7 +90,7 @@ def authenticateUser():
             if user.userExists(email, username, db):
                 return '2'  #user already exists with that email or username
 
-            session['user_id'] = user.create(email, generate_password_hash(password), username, night)
+            session['user_id'] = user.create(email, generate_password_hash(password), username, night, db)
             session['authenticated'] = True
             return '1'
 
