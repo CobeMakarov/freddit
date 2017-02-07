@@ -16,6 +16,8 @@ client = ""
 @app.route('/')
 def renderFrontPage():
 
+    db.connect()
+
     if session.get('authenticated'):
         userId = session['user_id']
         client = user(userId, db)
