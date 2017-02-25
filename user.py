@@ -16,7 +16,7 @@ class user:
 
         count = db.getCursor().rowcount
 
-        return count == 1
+        return count == 1 or count == 2
 
     @staticmethod
     def create(email, password, username, night, db):

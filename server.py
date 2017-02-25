@@ -381,7 +381,7 @@ def vote():
 
         return '1'
 
-@socketio.on('connect', namespace='/chat_app')
+@socketio.on('connect')
 def socket_connect():
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -405,11 +405,11 @@ def socket_connect():
     emit('restore', socket_messages)
     emit('join', session['socket_information'])
 
-@socketio.on('disconnect', namespace='/chat_app')
+@socketio.on('disconnect')
 def socket_disconnect():
     return None
 
-@socketio.on('message', namespace='/chat_app')
+@socketio.on('message')
 def socket_message(message):
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -429,7 +429,7 @@ def socket_message(message):
     socket_new_messages.append(msg)
     emit('message', msg, broadcast=True)
 
-@socketio.on('try_bulk_save', namespace='/chat_app')
+@socketio.on('try_bulk_save')
 def try_bulk_save():
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -443,4 +443,4 @@ def try_bulk_save():
 
 # start the server
 if __name__ == '__main__':
-    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
