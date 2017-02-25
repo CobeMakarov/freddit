@@ -1,0 +1,279 @@
+{% macro render_comment(comment, level, comment_list, misc, client) %}
+    <div class="row">
+        <div class="col-md-2 text-center" style="padding-left: 5%;">
+            {% set client_vote_status = client.has_voted(comment.id, false) %}
+            <div class="col-md-12">
+                {% if client_vote_status == 1 %}
+                <button type="button" class="btn btn-success active btn-xs upvote_comment" id="{{ comment.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-success btn-xs upvote_comment" id="{{ comment.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% endif %}
+            </div>
+            <div class="col-md-12" style="padding-top: 5%;">
+                {% if comment.vote_count > 0 %}
+                <p class="text-success vote-count" id="{{ comment.id }}">{{ comment.vote_count }}</p>
+                {% elif comment.vote_count < 0 %}
+                <p class="text-danger vote-count" id="{{ comment.id }}">{{ comment.vote_count }}</p>
+                {% elif comment.vote_count == 0 %}
+                <p class="vote-count" id="{{ comment.id }}">{{ comment.vote_count }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-12">
+                {% if client_vote_status == 0 %}
+                <button type="button" class="btn btn-danger active btn-xs downvote_comment" id="{{ comment.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-danger btn-xs downvote_comment" id="{{ comment.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-{{ 12 - level }} pull-right">
+                    {% if comment.vote_count > 0 %}
+                        {% set desired_panel="panel-success" %}
+                    {% elif comment.vote_count < 0 %}
+                        {% set desired_panel="panel-danger" %}
+                    {% elif comment.vote_count == 0 %}
+                        {% set desired_panel="panel-default" %}
+                    {% endif %}
+                    <div class="panel {{ desired_panel }}">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a>
+                                {% if comment.vote_count > 0 %}
+                                <span class="label label-success inline-block">{{ comment.vote_count }}</span>
+                                {% elif comment.vote_count < 0 %}
+                                <span class="label label-danger inline-block">{{ comment.vote_count }}</span>
+                                {% elif comment.vote_count == 0 %}
+                                <span class="label label-primary inline-block">{{ comment.vote_count }}</span>
+                                {% endif %}
+                                <div class="pull-right">
+                                    <i>{{ ago.format(comment.date_posted, date.datetime.now()) }}</i>
+                                </div>
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-md-12">
+                                <p>{{ comment.text }} </p>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button class="btn btn-link" style="padding: 0;">{{ misc.get_objs_key("parent", comment.id, comment_list)|length }} responses</button> |
+                            <button class="btn btn-link show_response_form" id="{{ comment.id }}" style="padding: 0;">Respond</button>
+
+                            <div class="form-group response_form" id="{{ comment.id }}" style="display:none;">
+                                <textarea class="form-control response_text" rows="3" id="{{ comment.id }}"></textarea>
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-link submit_response" id="{{ comment.id }}">Submit Response</button>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            {% if is_mod %}
+                            <div class="pull-right">
+                                <button class="btn btn-link edit_comment" id="{{ comment.id }}" style="padding: 0;">Edit</button> |
+                                <button class="btn btn-link delete_comment" id="{{ comment.id }}" style="padding: 0;">Delete</button>
+                            </div>
+                            <div class="clearfix"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+<!--suppress ALL -->
+<div class="col-md-8">
+    <div class="row" style="padding-bottom: 2%;">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="page-header" style="margin: 0%;">
+                <h1>{{ sub.title }}
+                    <small>/fr/{{ sub.path }}</small>
+                </h1>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="active" id="sort-hot"><a href="{{ url_for('render_post', id=post.id) }}">Hot</a></li>
+                <li><a href="{{ url_for('render_post_sort', id=post.id, sort='top') }}" id="sort-top">Top</a></li>
+                <li><a href="{{ url_for('render_post_sort', id=post.id, sort='new') }}" id="sort-new">New</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text-center" style="padding-left: 5%;">
+            {% set client_vote_status = client.has_voted(post.id, true) %}
+            <div class="col-md-12">
+                {% if client_vote_status == 1 %}
+                <button type="button" class="btn btn-success active btn-xs upvote_post" id="{{ post.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-success btn-xs upvote_post" id="{{ post.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% endif %}
+            </div>
+            <div class="col-md-12" style="padding-top: 5%;">
+                {% if post.vote_count > 0 %}
+                    <p class="text-success vote-count" id="{{ post.id }}">{{ post.vote_count }}</p>
+                {% elif post.vote_count < 0 %}
+                    <p class="text-danger vote-count" id="{{ post.id }}">{{ post.vote_count }}</p>
+                {% elif post.vote_count == 0 %}
+                    <p class="vote-count" id="{{ post.id }}">{{ post.vote_count }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-12">
+                {% if client_vote_status == 0 %}
+                <button type="button" class="btn btn-danger active btn-xs downvote_post" id="{{ post.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-danger btn-xs downvote_post" id="{{ post.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        {{ post.title }}
+                        <div class="pull-right">
+                            <i>{{ ago.format(post.date_posted, date.datetime.now()) }}</i>
+                        </div>
+                        <div class="clearfix"></div>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    {% if post.type == 0 %}
+                    <p>{{ post.post_text }}</p>
+                    {% elif post.type == 1 %}
+                    {{ misc.parse_media(post.media) }}
+                    {% endif %}
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-link" style="padding: 0;">{{ post.comments|length }} responses</button> |
+                    <button type="button" class="btn btn-link show_post_response_form" id="{{ post.id }}" style="padding: 0;">Respond</button>
+
+                    <div class="form-group post_response_form" id="{{ post.id }}" style="display:none;">
+                        <textarea class="form-control post_response_text" rows="3" id="{{ post.id }}"></textarea>
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-link submit_post_response" id="{{ post.id }}">Submit Response</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    {% if is_mod %}
+                        <div class="pull-right">
+                            <button class="btn btn-link edit_post" id="{{ post.id }}" style="padding: 0;">Edit</button> |
+                            <button class="btn btn-link delete_post" id="{{ post.id }}" style="padding: 0;">Delete</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    {% set first_level_comments = misc.get_objs_key("parent", 0, post.comments) %}
+
+    {% if first_level_comments|length > 0 %}
+        {% for first_level_comment in first_level_comments %}
+            {% set level = 0 %}
+            {{ render_comment(first_level_comment, level, post.comments, misc, client) }}
+
+            {% set second_level_comments = misc.get_objs_key("parent", first_level_comment.id, post.comments) %}
+
+
+            {% if second_level_comments|length > 0 %}
+                {% for second_level_comment in second_level_comments %}
+                    {% set level = 1 %}
+                    {{ render_comment(second_level_comment, level, post.comments, misc, client) }}
+
+                    {% set third_level_comments = misc.get_objs_key("parent", second_level_comment.id, post.comments) %}
+
+                    {% if third_level_comments|length > 0 %}
+                        {% for third_level_comment in third_level_comments %}
+                            {% set level = 2 %}
+                            {{ render_comment(third_level_comment, level, post.comments, misc, client) }}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="col-md-4">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="row" style="padding-bottom: 5%;">
+            <div class="col-md-12">
+                <form class="form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.."
+                               id="subfreddit-search"/>
+                        <div class="input-group-btn">
+                            <button class="btn btn-info">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="well">
+            <div class="row">
+
+            </div>
+        </div>
+        <div class="well">
+            <div class="row">
+                <div class="col-md-12">
+                    <b>{{sub.title}}</b>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <i>/fr/{{sub.path}}</i>
+                </div>
+                <div class="col-md-2">
+                    {% if client.is_subscribed(sub.id) %}
+                    <button type="button" class="btn btn-danger btn-xs">Unsubscribe</button>
+                    {% else %}
+                    <button type="button" class="btn btn-success btn-xs">Subscribe</button>
+                    {% endif %}
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <p>{{sub.desc}}</p>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                {% if client.is_subscribed(sub.id) %}
+                <div class="col-md-12 text-center">
+                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create
+                        Post</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="post_id hidden" id="{{ post.id }}"></div>
+{% endblock %}
+

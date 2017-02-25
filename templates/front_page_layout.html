@@ -5,12 +5,12 @@
         <title>Freddit: Front Page</title>
 
         {% if client.night %}
-        <link rel="stylesheet" href="../static/styles/dark-bootstrap.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/dark-bootstrap.css') }}">
         {% else %}
-        <link rel="stylesheet" href="../static/styles/light-bootstrap.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/light-bootstrap.css') }}">
         {% endif %}
     </head>
-    <body>
+    <body style="padding-top: 6%;">
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -62,8 +62,9 @@
             <footer>&copy Shacobe Johnson</footer>
         </div>
     </body>
-    <script src="../static/scripts/jquery.js"></script>
-    <script src="../static/scripts/bootstrap.js"></script>
-    <script src="../static/scripts/bootbox.min.js"></script>
-    <script src="../static/scripts/settings.js"></script>
+    <script src="{{ url_for('static', filename='scripts/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/bootbox.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/subfreddit.js') }}"></script>
 </html>

@@ -1,0 +1,45 @@
+{% extends "chat_layout.html" %}
+
+{% block content %}
+<div class="modal-dialog" id="chat-form" style="margin-top:-150%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                Chat
+                <div class="pull-right">
+                    <b><i>@{{client.username}}</i></b>
+                </div>
+
+                <div class="clearfix"></div>
+            </h4>
+        </div>
+        <div class="modal-body pre-scrollable">
+            <div class="row" ng-repeat="msg in messages">
+                <div class="col-md-1">
+                    <div ng-if="msg.user.is_admin == true">
+                        <a href="/u/{{ '{{ msg.user.id }}' }}"><b class="text-danger" ng-bind="msg.user.name"></b></a>:
+                    </div>
+                    <div ng-if="msg.user.is_admin != true">
+                        <b class="text-info" ng-bind="msg.user.name"></b>:
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <b ng-bind="msg.text"></b>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="row">
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="chat_message" id="chat_message">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary" ng-click="send()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

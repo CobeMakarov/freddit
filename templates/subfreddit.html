@@ -1,20 +1,24 @@
 {% extends "front_page_layout.html" %}
 
 {% block content %}
-    <div class="col-md-1"></div>
-    <div class="col-md-11" style="padding-bottom: 5%; padding-left: 3%;">
-        <div class="row">
+    <!--suppress ALL -->
+<div class="col-md-8">
+    <div class="row" style="padding-bottom: 2%;">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="page-header" style="margin: 0%;">
+                <h1>{{ sub.title }} <small>/fr/{{ sub.path }}</small> </h1>
+            </div>
             <ul class="nav nav-tabs">
-                <li class="active" id="sort-hot"><a href="#">Hot</a></li>
-                <li><a href="#" id="sort-top">Top</a></li>
-                <li><a href="#" id="sort-new">New</a></li>
+                <li class="active" id="sort-hot"><a href="{{ url_for('render_sub', name=sub.path) }}">Hot</a></li>
+                <li><a href="{{ url_for('render_sub_sort', name=sub.path, sort='top') }}" id="sort-top">Top</a></li>
+                <li><a href="{{ url_for('render_sub_sort', name=sub.path, sort='new') }}" id="sort-new">New</a></li>
             </ul>
         </div>
     </div>
     {% for post in posts %}
-    <div class="col-md-12">
-        <div class="row">
-        <div class="col-md-1 text-center">
+    <div class="row">
+        <div class="col-md-2 text-center" style="padding-left: 5%;">
             {% set client_vote_status = client.has_voted(post.id, true) %}
             <div class="col-md-12">
                 {% if client_vote_status == 1 %}
@@ -51,7 +55,7 @@
         <div class="col-md-10">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <button type="button" class="btn btn-warning btn-xs post-expand">
                             <span class="span6 glyphicon glyphicon-fullscreen"></span>  Expand
                         </button>
@@ -77,7 +81,7 @@
                             </div>
                             <div class="panel-footer">
                                 <a href="{{ url_for('render_post', id=post.id) }}">{{ post.get_comment_count() }} comments</a>
-                                {% if client.admin %}
+                                {% if is_mod %}
                                 <div class="pull-right">
                                     <a class="delete-post" id="{{ post.id }}" href="">Delete</a>
                                 </div>
@@ -89,7 +93,57 @@
             </div>
         </div>
     </div>
-    </div>
     {% endfor %}
+</div>
+
+<div class="col-md-4">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="row" style="padding-bottom: 5%;">
+            <div class="col-md-12">
+                <form class="form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.." id="subfreddit-search" />
+                        <div class="input-group-btn">
+                            <button class="btn btn-info">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="well">
+            <div class="row">
+                <div class="col-md-12">
+                    <b>{{sub.title}}</b>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <i>/fr/{{sub.path}}</i>
+                </div>
+                <div class="col-md-2">
+                    {% if client.is_subscribed(sub.id) %}
+                    <button type="button" class="btn btn-danger btn-xs">Unsubscribe</button>
+                    {% else %}
+                    <button type="button" class="btn btn-success btn-xs">Subscribe</button>
+                    {% endif %}
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-12">
+                    <p>{{sub.desc}}</p>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                {% if client.is_subscribed(sub.id) %}
+                <div class="col-md-12 text-center">
+                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create Post</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 

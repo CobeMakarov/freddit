@@ -15,6 +15,9 @@ $(document).ready(function() {
                 case '2':
                     bootbox.alert("Your desired subfreddit path is too long, try to shorten it!");
                 break;
+                case '3':
+                    window.location = '/fr/' + $('#subPath').val();
+                break;
             }
         })
     })

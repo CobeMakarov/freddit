@@ -1,0 +1,122 @@
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+    <!--suppress ALL -->
+<div class="col-md-8">
+    <div class="row" style="padding-bottom: 2%;">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="page-header" style="margin: 0%;">
+                <h1>{{ sub.title }} <small>/fr/{{ sub.path }}</small> </h1>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="active" id="sort-hot"><a href="#">Hot</a></li>
+                <li><a href="#" id="sort-top">Top</a></li>
+                <li><a href="#" id="sort-new">New</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <form class="form-horizontal" id="login-layout">
+                <div class="form-group">
+                    <label for="post_title" class="col-lg-3 control-label">Title</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="post_title" placeholder="Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subPath" class="col-lg-3 control-label">Type</label>
+                    <div class="col-lg-8 text-center">
+                        <button type="button" class="btn btn-link btn-lg" id="show_text_form" style="border-right: 1px dashed #333;">
+                            <span class="span6 glyphicon glyphicon-text-size"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-link btn-lg" id="show_media_form">
+                            <span class="span6 glyphicon glyphicon glyphicon-film"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="post_text" class="col-lg-3 control-label" id="extra_label">Text</label>
+                    <div class="col-lg-8">
+                        <textarea class="form-control" rows="3" id="post_text" placeholder="Completely optional"></textarea>
+                        <input type="text" class="form-control" id="post_media" placeholder="Media URL" style="display:none;">
+                    </div>
+                </div>
+                <div class="col-lg-7"></div>
+                <div class="col-lg-5" style="padding-left:26%;">
+                    <button type="button" class="btn btn-info create_post" id="{{ sub.id }}">Post</button>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="row" style="padding-bottom: 5%;">
+            <div class="col-md-12">
+                <form class="form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.." id="subfreddit-search" />
+                        <div class="input-group-btn">
+                            <button class="btn btn-info">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="well">
+            <div class="row">
+                <div class="col-md-12">
+                    <b>{{sub.title}}</b>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <i>/fr/{{sub.path}}</i>
+                </div>
+                <div class="col-md-2">
+                    {% if client.is_subscribed(sub.id) %}
+                    <button type="button" class="btn btn-danger btn-xs">Unsubscribe</button>
+                    {% else %}
+                    <button type="button" class="btn btn-success btn-xs">Subscribe</button>
+                    {% endif %}
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <p>
+                            A Subfreddit is a sub-category used for dicussion. The discussion can include anything that is relevant
+                            to the theme of the subfreddit.
+                        </p>
+                        <p>
+                            The <b>title</b> field is the text that will show in the title of the site
+                            when visiting the sub.
+                        </p>
+                        <p>
+                            The <b>path</b> field is the path needed to access the sub freddit.com/fr/<b>path</b>.
+                            The <b>path</b> can only contain letters and has a max length of <b>30</b> characters.
+                        </p>
+                        <p>
+                            A sub can be <b>private</b>. By this, this means only you can access the sub.
+                            Eventually you will be able to invite users to access your subfreddit!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                {% if client.is_subscribed(sub.id) %}
+                <div class="col-md-12 text-center">
+                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create Post</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
