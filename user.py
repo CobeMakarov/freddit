@@ -69,6 +69,9 @@ class user:
                                     (self.id, self.id))
 
         calculation = self.db.getCursor().fetchone()[0]
+
+        if calculation is None:
+            calculation = 0
         #ok so we need to get the sum of posts.vote_count + the sum of comments.vote_count and combine them using joins
         return calculation
 

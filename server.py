@@ -53,6 +53,8 @@ def frontpage():
 
 @app.route('/authenticate', methods=['GET', 'POST'])
 def authenticate():
+    db.connect()
+
     error = False
 
     if request.method == "POST":
@@ -100,7 +102,7 @@ def authenticate():
             if '@' not in request.form['email'] or '.' not in request.form['email']:
                 return '5'  # email not formatted correctly
 
-            if password is not password2:
+            if password != password2:
                 return '3'  # passwords do not match
 
             if not len(request.form["password"]) >= 6:
