@@ -38,15 +38,12 @@ class misc:
         index = 0
 
         for obj in list[:]:
-            print "[" + str(index) + "]=" + obj.path
             if getattr(obj, key) is val:
                 break
             index += 1
 
         index -= 1
 
-        print index
-        print list[index].path
         del list[index]
 
     @staticmethod
