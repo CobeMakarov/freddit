@@ -99,15 +99,33 @@
 <div class="col-md-4">
     <div class="affix" style="padding-right: 2%;">
         <div class="row" style="padding-bottom: 5%;">
-            <div class="col-md-12">
+            <div class="col-md-12" ng-controller="SearchController">
                 <form class="form">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.." id="subfreddit-search" />
+                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.." id="subfreddit_search" />
                         <div class="input-group-btn">
-                            <button class="btn btn-info">Search</button>
+                            <button class="btn btn-info subfreddit_search_submit" id = "{{ sub.id }}">Search</button>
                         </div>
                     </div>
+                    <span id="search_text" class="help-block text-warning" style="display:none;">searching...</span>
                 </form>
+                <hr>
+                <div class="pre-scrollable">
+                    <div ng-if="search_results.length > 0">
+                        <div class="row" ng-repeat="sr in search_results">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <h4><a href="{{ '{{ sr.link }}' }}" ng-bind="sr.name"></a> {{ '{{ sr.extra }}' }}</h4>
+                                <h5 ng-bind="sr.desc"></h5>
+                                <hr>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div ng-if="search_results.length <= 0">
+                        No results found!
+                    </div>
+                </div>
             </div>
         </div>
         <div class="well">
@@ -122,9 +140,9 @@
                 </div>
                 <div class="col-md-2">
                     {% if client.is_subscribed(sub.id) %}
-                    <button type="button" class="btn btn-danger btn-xs">Unsubscribe</button>
+                    <a href="{{ url_for('unsubscribe', id=sub.id) }}" type="button" class="btn btn-danger btn-xs">Unsubscribe</a>
                     {% else %}
-                    <button type="button" class="btn btn-success btn-xs">Subscribe</button>
+                    <a href="{{ url_for('subscribe', id=sub.id) }}" type="button" class="btn btn-success btn-xs">Subscribe</a>
                     {% endif %}
                 </div>
             </div>

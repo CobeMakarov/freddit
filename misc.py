@@ -34,6 +34,22 @@ class misc:
         return res
 
     @staticmethod
+    def remove_by_key(key, val, list):
+        index = 0
+
+        for obj in list[:]:
+            print "[" + str(index) + "]=" + obj.path
+            if getattr(obj, key) is val:
+                break
+            index += 1
+
+        index -= 1
+
+        print index
+        print list[index].path
+        del list[index]
+
+    @staticmethod
     def parse_media(media):
         if "youtube.com/watch?v=" in media:  #youtube video
             return '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="' +\

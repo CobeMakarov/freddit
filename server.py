@@ -1,21 +1,20 @@
 import os
 import uuid
+import timeago, datetime
 
-from flask import Flask, render_template, session, request, url_for, redirect
 from flask_socketio import SocketIO, emit
+from werkzeug import check_password_hash, generate_password_hash
+from flask import Flask, render_template, session, request, url_for, redirect
 
-from subfreddit import subfreddit
-from database import database
 from user import user
 from misc import misc
 from chat import chat
+from search import search as search_for
+from database import database
+from subfreddit import subfreddit
 
 from post import post as post_obj
 from comment import comment as cmt_obj
-
-from werkzeug import check_password_hash, generate_password_hash
-
-import timeago, datetime
 
 app = Flask(__name__)
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
@@ -172,6 +171,48 @@ def render_sub_sort(name=None, sort=None):
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts(sort), subfreddits=client.subfreddits,
                                    sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+
+@app.route('/fr/subscribe/<id>')
+def subscribe(id=None):
+    if id is None:
+        return None;
+
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    sub = subfreddit(id, db)
+
+    if sub is not None:
+        client.subscribe(id)
+
+    return render_template('subfreddit.html',
+                           client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+
+@app.route('/fr/unsubscribe/<id>')
+def unsubscribe(id=None):
+    if id is None:
+        return None;
+
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    sub = subfreddit(id, db)
+
+    if sub is not None:
+        client.unsubscribe(id)
+
+    return render_template('subfreddit.html',
+                           client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
 
 @app.route('/p/<id>')
 def render_post(id=None):
@@ -440,6 +481,37 @@ def try_bulk_save():
 
     if chat_manager.bulk_save(socket_new_messages):
         del socket_new_messages[:]
+
+@socketio.on('try_search')
+def try_search(query, param):
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    results = ""
+
+    print query
+
+    if param == "users":
+        results = search_for.users(query, db)
+    elif param == "subfreddits":
+        results = search_for.subfreddits(query, db)
+    elif param == "posts":
+        results = search_for.posts(query, db)
+
+    emit('refresh_results', results)
+
+@socketio.on('try_subfreddit_search')
+def try_search_subfreddit(query, sub):
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    results = search_for.posts_in_sub(query, sub, db)
+
+    emit('refresh_results', results)
 
 # start the server
 if __name__ == '__main__':

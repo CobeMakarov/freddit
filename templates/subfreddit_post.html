@@ -250,9 +250,9 @@
                 </div>
                 <div class="col-md-2">
                     {% if client.is_subscribed(sub.id) %}
-                    <button type="button" class="btn btn-danger btn-xs">Unsubscribe</button>
+                    <a href="{{ url_for('unsubscribe', id=sub.id) }}" type="button" class="btn btn-danger btn-xs">Unsubscribe</a>
                     {% else %}
-                    <button type="button" class="btn btn-success btn-xs">Subscribe</button>
+                    <a href="{{ url_for('subscribe', id=sub.id) }}" type="button" class="btn btn-success btn-xs">Subscribe</a>
                     {% endif %}
                 </div>
             </div>
@@ -266,8 +266,9 @@
             <div class="row">
                 {% if client.is_subscribed(sub.id) %}
                 <div class="col-md-12 text-center">
-                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create
-                        Post</a>
+                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">
+                        Create Post
+                    </a>
                 </div>
                 {% endif %}
             </div>

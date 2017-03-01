@@ -2,6 +2,8 @@
   <dictionary name="obiwan">
     <words>
       <w>frontpage</w>
+      <w>subfreddits</w>
+      <w>unsubscribe</w>
     </words>
   </dictionary>
 </component>

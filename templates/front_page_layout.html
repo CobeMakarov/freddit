@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="search_app">
     <head>
         <meta charset="UTF-8">
         <title>Freddit: Front Page</title>
@@ -9,6 +9,7 @@
         {% else %}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/light-bootstrap.css') }}">
         {% endif %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap-extra.css') }}">
     </head>
     <body style="padding-top: 6%;">
         <div class="navbar navbar-default navbar-fixed-top">
@@ -65,6 +66,12 @@
     <script src="{{ url_for('static', filename='scripts/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/bootbox.min.js') }}"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.4/socket.io.js"></script>
+
     <script src="{{ url_for('static', filename='scripts/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/subfreddit.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+
 </html>
