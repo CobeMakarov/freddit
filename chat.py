@@ -30,7 +30,7 @@ class chat:
     def get_latest_messages(self):
         messages = []
 
-        self.db.getCursor().execute("SELECT * FROM chat_messages ORDER BY date_posted DESC LIMIT 20")
+        self.db.getCursor().execute("SELECT * FROM chat_messages ORDER BY date_posted ASC LIMIT 20")
 
         rows = self.db.getCursor().fetchall()
 

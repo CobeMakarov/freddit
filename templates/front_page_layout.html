@@ -2,7 +2,7 @@
 <html lang="en" ng-app="search_app">
     <head>
         <meta charset="UTF-8">
-        <title>Freddit: Front Page</title>
+        <title> {{ page_title }}</title>
 
         {% if client.night %}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/dark-bootstrap.css') }}">

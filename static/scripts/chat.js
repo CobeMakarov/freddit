@@ -10,7 +10,8 @@ chat_app.controller('ChatController', function($scope) {
         $scope.messages = msgs;
         $scope.$apply()
 
-        $('#chat_message').val("");
+        $('#chat_message').val($("#chat_message").val() + " ");
+        $('#chat-form').scrollTop($('#chat-form')[0].scrollHeight);
     })
 
     socket.on('join', function(user) {
@@ -25,7 +26,18 @@ chat_app.controller('ChatController', function($scope) {
         $scope.messages.push(msg);
         $scope.$apply()
 
-        $('#chat_message').val("");
+        var current_message = $('#chat_message').val();
+
+        console.log(current_message);
+        console.log(msg.text);
+
+        if (current_message == msg.text) {
+            $('#chat_message').val("");
+        } else {
+            $('#chat_message').val($("#chat_message").val() + " ");
+        }
+
+        $('.modal-body').scrollTop($('.modal-body')[0].scrollHeight);
     })
 
     socket.on('disconnect', function() {
@@ -33,13 +45,16 @@ chat_app.controller('ChatController', function($scope) {
     })
 
     $scope.send = function() {
-        var msg = $scope.chat_message;
-        socket.emit('message', msg)
+        var msg = $('#chat_message').val();
+
+        if(msg.length > 0) {
+            socket.emit('message', msg)
+        }
     }
 
     setInterval(function(){
         socket.emit('try_bulk_save')
-    }, 60000)
+    }, 600000)
 });
 
 $(document).ready(function() {

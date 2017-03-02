@@ -139,7 +139,7 @@ $('.submit_post_response').on('click', function() {
         if(code == '-1') {
             //not sure yet
         } else {
-            window.location = '/p/' + $(this).attr('id');
+            window.location = '/p/' + code;
         }
     })
 })

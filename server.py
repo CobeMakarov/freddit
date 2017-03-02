@@ -45,7 +45,7 @@ def frontpage():
             print("[Site Log] " + client.username + " has dark mode enabled, let's enable it sitewide.")
 
         return render_template('front_page.html', client=client, posts=client.build_frontpage(), subfreddits=client.subfreddits,
-                               ago=timeago, date=datetime)
+                               ago=timeago, date=datetime, page_title="Freddit: Front Page")
 
     return render_template('authenticate.html')
 
@@ -145,9 +145,12 @@ def render_sub(name=None):
             if sub is None:
                 sub = subfreddit(0, db, name)
 
+            if sub is None:
+                return redirect(url_for('empty_sub'))
+
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title)
 
 @app.route('/fr/<name>/<sort>')
 def render_sub_sort(name=None, sort=None):
@@ -170,7 +173,7 @@ def render_sub_sort(name=None, sort=None):
 
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts(sort), subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title)
 
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
@@ -212,7 +215,7 @@ def unsubscribe(id=None):
 
     return render_template('subfreddit.html',
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title="Freddit: Front Page")
 
 @app.route('/p/<id>')
 def render_post(id=None):
@@ -230,8 +233,8 @@ def render_post(id=None):
             sub = subfreddit(p.subfreddit, db)
 
             return render_template('subfreddit_post.html',
-                                   client=client, post=p, subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), misc=misc)
+                                   client=client, post=p, subfreddits=client.subfreddits, sub=sub, ago=timeago,
+                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title)
 
 @app.route('/p/<id>/<sort>')
 def render_post_sort(id=None, sort=None):
@@ -255,8 +258,8 @@ def render_post_sort(id=None, sort=None):
             sub = subfreddit(p.subfreddit, db)
 
             return render_template('subfreddit_post.html',
-                                   client=client, post=p, subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), misc=misc)
+                                   client=client, post=p, subfreddits=client.subfreddits, sub=sub, ago=timeago,
+                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title)
 
 @app.route('/u/<name>')
 def render_user(name=None):
@@ -300,7 +303,8 @@ def create_sub():
         ##return redirect(url_for("renderSubFreddit", name=path))
         return '3'
     else:
-        return render_template('front_page_create_subs.html', client=client, subfreddits=client.subfreddits)
+        return render_template('front_page_create_subs.html', client=client, subfreddits=client.subfreddits,
+                               page_title="Freddit: Create Subfreddit")
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -315,7 +319,7 @@ def render_chat():
 
     client = user(session['user_id'], db)
 
-    return render_template('chat.html', client=client)
+    return render_template('chat.html', client=client, page_title="Freddit: Chatbox")
 
 # post actions (posting a thread, commenting on a thread, voting on a thread or comment)
 
@@ -359,7 +363,8 @@ def post():
         if sub.path is None:  # sub not exists
             return "subfreddit not found."
 
-        return render_template('subfreddit_create_post.html', client=client, subfreddits=client.subfreddits, sub=sub)
+        return render_template('subfreddit_create_post.html', client=client, subfreddits=client.subfreddits, sub=sub,
+                               page_title="Freddit: Create Post")
         #client.post(sub, "This is my first post!", 0, "This is the post content of my first post!")
 
 @app.route('/comment', methods=['GET', 'POST'])
@@ -381,7 +386,9 @@ def comment():
 
         client.comment(post_id, parent, text)
 
-        return post_id
+        print post_id
+
+        return str(post_id)
 
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
@@ -440,9 +447,9 @@ def socket_connect():
 
     socket_messages = chat_manager.get_latest_messages()
 
-    msg = {'text': client.username + " has joined the chat..", 'user': session['socket_information']}
+    #msg = {'text': client.username + " has joined the chat..", 'user': session['socket_information']}
 
-    emit('message', msg, broadcast=True)
+    #emit('message', msg, broadcast=True)
     emit('restore', socket_messages)
     emit('join', session['socket_information'])
 
