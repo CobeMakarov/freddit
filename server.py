@@ -1,20 +1,19 @@
-import os
 import uuid
-import timeago, datetime
 
+import datetime
+import timeago
+from flask import Flask, render_template, session, request, url_for, redirect
 from flask_socketio import SocketIO, emit
 from werkzeug import check_password_hash, generate_password_hash
-from flask import Flask, render_template, session, request, url_for, redirect
 
-from user import user
-from misc import misc
 from chat import chat
-from search import search as search_for
-from database import database
-from subfreddit import subfreddit
-
-from post import post as post_obj
 from comment import comment as cmt_obj
+from database import database
+from misc import misc
+from post import post as post_obj
+from search import search as search_for
+from subfreddit import subfreddit
+from user import user
 
 app = Flask(__name__)
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
@@ -29,7 +28,7 @@ db = database()  # create a database object
 
 chat_manager = ""
 
-client = ""
+client = "" # march 6, 10:09pm; next time u open this program work on sticcy posts
 
 @app.route('/')
 def frontpage():
@@ -107,6 +106,12 @@ def authenticate():
             if not len(request.form["password"]) >= 6:
                 return '6ix'
 
+            if not username.isalnum():
+                return '7'
+
+            if len(username) >= 30:
+                return '8'
+
             if user.exists(email, username, db):
                 return '2'  # user already exists with that email or username
 
@@ -123,7 +128,7 @@ def logout():
 
 @app.route('/fr')
 def empty_sub():
-    return "Subfreddit not found."
+    return "Subfreddit not found. <a href='/'>return home</a>"
 
 @app.route('/p')
 def empty_post():
@@ -140,12 +145,14 @@ def render_sub(name=None):
             userId = session['user_id']
             client = user(userId, db)
 
+            name = name.lower()
+
             sub = misc.get_obj_key("path", name, client.subfreddits)
 
             if sub is None:
                 sub = subfreddit(0, db, name)
 
-            if sub is None:
+            if sub.title is None or len(sub.title) == 0:
                 return redirect(url_for('empty_sub'))
 
             return render_template('subfreddit.html',
@@ -163,6 +170,8 @@ def render_sub_sort(name=None, sort=None):
             userId = session['user_id']
             client = user(userId, db)
 
+            name = name.lower()
+
             sub = misc.get_obj_key("path", name, client.subfreddits)
 
             if sub is None:
@@ -170,6 +179,9 @@ def render_sub_sort(name=None, sort=None):
 
             if sort is None:
                 sort = "hot"
+
+            if sub.title is None or len(sub.title) == 0:
+                return redirect(url_for('empty_sub'))
 
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts(sort), subfreddits=client.subfreddits,
@@ -292,10 +304,10 @@ def create_sub():
         if len(title) > 85:
             return '1'
 
-        if len(path) > 30:
+        if len(path) > 30 or not path.isalpha():
             return '2'
 
-        sub_id = subfreddit.create(path, title, client.id, private, desc, db)
+        sub_id = subfreddit.create(path.lower(), title, client.id, private, desc, db)
 
         client.subscribe(sub_id)
         client.moderate(sub_id)
@@ -428,6 +440,8 @@ def vote():
                 cmt_obj.update_vote(id, vote, db, True)
 
         return '1'
+
+# socket actions
 
 @socketio.on('connect')
 def socket_connect():

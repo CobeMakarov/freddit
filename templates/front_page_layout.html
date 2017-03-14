@@ -5,9 +5,9 @@
         <title> {{ page_title }}</title>
 
         {% if client.night %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/dark-bootstrap.css') }}">
+        <link rel="stylesheet" id="page-theme" href="{{ url_for('static', filename='styles/dark-bootstrap.css') }}">
         {% else %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/light-bootstrap.css') }}">
+        <link rel="stylesheet" id="page-theme" href="{{ url_for('static', filename='styles/light-bootstrap.css') }}">
         {% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap-extra.css') }}">
     </head>
@@ -60,7 +60,9 @@
             <div class="row">
                 {%block content %}{% endblock %}
             </div>
-            <footer>&copy Shacobe Johnson</footer>
+            <footer style="padding-top: 15%; padding-bottom: 5%;">
+                <button type="button" class="btn btn-link" id="night_toggle" style="padding: 0; vertical-align: 0; ">Night Mode (temp)</button> | &copy Shacobe Johnson
+            </footer>
         </div>
     </body>
     <script src="{{ url_for('static', filename='scripts/jquery.js') }}"></script>

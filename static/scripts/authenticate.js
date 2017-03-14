@@ -50,6 +50,12 @@ $(document).ready(function() {
                     case '6ix':
                         bootbox.alert("The minimum length for a password is 6 characters");
                     break;
+                    case '7':
+                        bootbox.alert("It seems you have some illegal characters in your username! You may only have characters & numbers.")
+                    break;
+                    case '8':
+                        bootbox.alert("The username you chose is too long, 30 characters max.")
+                    break;
                 }
             })
     })
