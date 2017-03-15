@@ -45,7 +45,7 @@ class search:
     def posts(term, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM posts WHERE title LIKE %s OR post_text LIKE %s",
+        db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s",
                                ('%' + str(term) + '%', '%' + str(term) + '%'))
 
         rows = db.getCursor().fetchall()
@@ -64,7 +64,7 @@ class search:
     def posts_in_sub(term, sub, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM posts WHERE title LIKE %s OR post_text LIKE %s AND subfreddit = %s",
+        db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s AND subfreddit = %s",
                                ('%' + str(term) + '%', '%' + str(term) + '%', sub))
 
         rows = db.getCursor().fetchall()

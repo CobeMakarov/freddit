@@ -226,3 +226,86 @@ $('.downvote_comment').on('click', function() {
         }
     })
 })
+
+$('.sticky_post').on('click', function() {
+    var parent = $(this).parent().parent();
+
+    parent.find('.post_actions').fadeOut(750, function() {
+        parent.find('.action_confirmation').attr('operation', 'sticky');
+        parent.find('.action_confirmation').fadeIn(750);
+    })
+})
+
+$('.unsticky_post').on('click', function() {
+    var parent = $(this).parent().parent();
+
+    parent.find('.post_actions').fadeOut(750, function() {
+        parent.find('.action_confirmation').attr('operation', 'unsticky');
+        parent.find('.action_confirmation').fadeIn(750);
+    })
+})
+
+$('.delete_post').on('click', function() {
+    var parent = $(this).parent().parent();
+
+    parent.find('.post_actions').fadeOut(750, function() {
+        parent.find('.action_confirmation').attr('operation', 'delete');
+        parent.find('.action_confirmation').fadeIn(750);
+    })
+})
+
+$('.yes_confirmation').on('click', function() {
+    var op = $(this).parent().attr('operation');
+    var id = $(this).parent().attr('id');
+    var in_post = ($(this).parent().attr('in_post') === 'true');
+
+    var parent = $(this).parent().parent();
+
+    $.post(('/' + op), {'id': id}, function(code) {
+        switch(code) {
+            case '0':
+                bootbox.alert('Something went wrong, try again later!');
+                break;
+            case '1':
+                bootbox.alert('You don\'t have the permission to run this operation!');
+                break;
+            case '2':
+                if (!in_post) {
+                    if (op == 'delete') {
+                        parent
+                           .parent() // panel panel-default
+                           .parent() // col-md-9
+                           .parent() // col-md-12
+                           .parent() // row
+                           .parent() // col-md-10
+                           .parent() // row
+                           .parent().fadeOut(750); // col-md-8
+                   } else if (op == 'sticky') {
+                        parent
+                           .parent() // panel panel-default
+                           .parent()
+                           .removeClass('panel-default').fadeOut(325)
+                           .addClass('panel-warning').fadeIn(325);
+                   } else if (op == 'unsticky') {
+                        parent
+                           .parent() // panel panel-default
+                           .parent()
+                           .removeClass('panel-warning').fadeOut(325)
+                           .addClass('panel-default').fadeIn(325);
+                   }
+                }
+                parent.find('.action_confirmation').fadeOut(750, function() {
+                    parent.find('.post_actions').fadeIn(750);
+                })
+                break;
+        }
+    });
+})
+
+$('.no_confirmation').on('click', function() {
+    var parent = $(this).parent().parent();
+
+    parent.find('.action_confirmation').fadeOut(750, function() {
+        parent.find('.post_actions').fadeIn(750);
+    })
+})

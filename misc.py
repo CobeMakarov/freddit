@@ -1,5 +1,3 @@
-from random import randint
-
 class misc:
     @staticmethod
     def obj_exists_key(key, val, list):
@@ -45,6 +43,10 @@ class misc:
         index -= 1
 
         del list[index]
+
+    @staticmethod
+    def user_exists():
+        return None
 
     @staticmethod
     def parse_media(media):

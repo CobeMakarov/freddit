@@ -1,6 +1,7 @@
-from post import post
 from misc import misc
+from post import post
 from subfreddit import subfreddit
+
 
 class user:
     id, karma, admin = 0, 0, 0
@@ -33,7 +34,7 @@ class user:
     @staticmethod
     def get_karma_by_id(db, id):
         db.getCursor().execute("SELECT sum(vote_count) FROM "
-                               "(SELECT vote_count FROM posts WHERE user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
+                               "(SELECT vote_count FROM posts WHERE soft_deleted = 0 AND user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
                                (id, id))
 
         calculation = db.getCursor().fetchone()[0]
@@ -78,7 +79,7 @@ class user:
 
     def calculate_karma(self):
         self.db.getCursor().execute("SELECT sum(vote_count) FROM "
-                                    "(SELECT vote_count FROM posts WHERE user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
+                                    "(SELECT vote_count FROM posts WHERE soft_deleted = 0 AND user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
                                     (self.id, self.id))
 
         calculation = self.db.getCursor().fetchone()[0]
@@ -134,13 +135,13 @@ class user:
         for subs in self.subfreddits:
             id_list.append(subs.id)
 
-        self.db.getCursor().execute("SELECT * FROM posts WHERE subfreddit = ANY(%s) AND date_posted <= "
+        self.db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND subfreddit = ANY(%s) AND date_posted <= "
                                     "(now()::timestamp + INTERVAL '24 HOURS')", (id_list,))
 
         rows = self.db.getCursor().fetchall()
 
         for row in rows:
-            front_page.append(post(row["id"], self.db, row["subfreddit"], row["type"], row["vote_count"], row["title"],
+            front_page.append(post(row["id"], self.db, row["subfreddit"], row["type"], row["vote_count"], row["sticky"], row["title"],
                               row["media_url"], row["post_text"], row["date_posted"], row["user_id"]))
 
         return front_page
@@ -148,13 +149,13 @@ class user:
     def get_latestposts(self):
         posts = []
 
-        self.db.getCursor().execute("SELECT * FROM posts WHERE user_id = %s ORDER BY DESC LIMIT 5", (self.id,))
+        self.db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND user_id = %s ORDER BY DESC LIMIT 5", (self.id,))
 
         rows = self.db.getCursor().fetchall()
 
         for row in rows:
             posts.append(post(
-                row["id"], row["subfreddit"], row["type"], row["vote_count"], row["title"],
+                row["id"], row["subfreddit"], row["type"], row["vote_count"], row["sticky"], row["title"],
                 row["media_url"], row["post_text"], row["date_posted"], self.id, self.db
             ))
 

@@ -1,6 +1,6 @@
+import datetime
 import uuid
 
-import datetime
 import timeago
 from flask import Flask, render_template, session, request, url_for, redirect
 from flask_socketio import SocketIO, emit
@@ -132,7 +132,7 @@ def empty_sub():
 
 @app.route('/p')
 def empty_post():
-    return "Post not found."
+    return "Post not found. <a href='/'>return home</a>"
 
 @app.route('/fr/<name>')
 def render_sub(name=None):
@@ -157,7 +157,8 @@ def render_sub(name=None):
 
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title)
+                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
+                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post())
 
 @app.route('/fr/<name>/<sort>')
 def render_sub_sort(name=None, sort=None):
@@ -185,7 +186,8 @@ def render_sub_sort(name=None, sort=None):
 
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts(sort), subfreddits=client.subfreddits,
-                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title)
+                                   sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
+                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post())
 
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
@@ -206,7 +208,8 @@ def subscribe(id=None):
 
     return render_template('subfreddit.html',
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id))
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id),
+                           is_owner=sub.is_owner(client.id))
 
 @app.route('/fr/unsubscribe/<id>')
 def unsubscribe(id=None):
@@ -227,7 +230,8 @@ def unsubscribe(id=None):
 
     return render_template('subfreddit.html',
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title="Freddit: Front Page")
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title="Freddit: Front Page",
+                           is_owner=sub.is_owner(client.id))
 
 @app.route('/p/<id>')
 def render_post(id=None):
@@ -246,7 +250,8 @@ def render_post(id=None):
 
             return render_template('subfreddit_post.html',
                                    client=client, post=p, subfreddits=client.subfreddits, sub=sub, ago=timeago,
-                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title)
+                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title,
+                                   is_owner=sub.is_owner(client.id))
 
 @app.route('/p/<id>/<sort>')
 def render_post_sort(id=None, sort=None):
@@ -271,7 +276,8 @@ def render_post_sort(id=None, sort=None):
 
             return render_template('subfreddit_post.html',
                                    client=client, post=p, subfreddits=client.subfreddits, sub=sub, ago=timeago,
-                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title)
+                                   date=datetime, is_mod=client.is_mod(sub.id), misc=misc, page_title=p.title,
+                                   is_owner=sub.is_owner(client.id))
 
 @app.route('/u/<name>')
 def render_user(name=None):
@@ -398,8 +404,6 @@ def comment():
 
         client.comment(post_id, parent, text)
 
-        print post_id
-
         return str(post_id)
 
 @app.route('/vote', methods=['GET', 'POST'])
@@ -441,6 +445,83 @@ def vote():
 
         return '1'
 
+@app.route('/sticky', methods=['GET', 'POST'])
+def sticky():
+    if not session.get('authenticated'):
+        return '0'
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        if not request.form["id"]:
+            return '0'  # something went wrong
+
+        id = request.form["id"]
+
+        p = post_obj(id, db)
+
+        print p.title
+
+        if not client.is_mod(p.subfreddit):
+            return '1'  # user doesn't have permission
+
+        p.sticky()
+
+        return '2'
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if not session.get('authenticated'):
+        return '0'
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        if not request.form["id"]:
+            return '0'  # something went wrong
+
+        id = request.form["id"]
+
+        p = post_obj(id, db)
+
+        print p.title
+
+        if not client.is_mod(p.subfreddit):
+            return '1'  # user doesn't have permission
+
+        p.delete()
+
+        return '2'
+
+@app.route('/unsticky', methods=['GET', 'POST'])
+def unsticky():
+    if not session.get('authenticated'):
+        return '0'
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        if not request.form["id"]:
+            return '0'  # something went wrong
+
+        id = request.form["id"]
+
+        p = post_obj(id, db)
+
+        print p.title
+
+        if not client.is_mod(p.subfreddit):
+            return '1'  # user doesn't have permission
+
+        p.unsticky()
+
+        return '2'
 # socket actions
 
 @socketio.on('connect')

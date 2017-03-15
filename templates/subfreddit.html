@@ -16,6 +16,96 @@
             </ul>
         </div>
     </div>
+    {% if sticky.title|length > 0 %}
+    <div class="row">
+        <div class="col-md-2 text-center" style="padding-left: 5%;">
+            {% set client_vote_status = client.has_voted(sticky.id, true) %}
+            <div class="col-md-12">
+                {% if client_vote_status == 1 %}
+                <button type="button" class="btn btn-success active btn-xs upvote_post" id="{{ sticky.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-success btn-xs upvote_post" id="{{ sticky.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-up"></span>
+                </button>
+                {% endif %}
+            </div>
+            <div class="col-md-12" style="padding-top: 5%;">
+                {% if sticky.vote_count > 0 %}
+                    <p class="text-success vote-count" id="{{ sticky.id }}">{{ sticky.vote_count }}</p>
+                {% elif sticky.vote_count < 0 %}
+                    <p class="text-danger vote-count" id="{{ sticky.id }}">{{ sticky.vote_count }}</p>
+                {% elif sticky.vote_count == 0 %}
+                    <p class="vote-count" id="{{ sticky.id }}">{{ sticky.vote_count }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-12">
+                {% if client_vote_status == 0 %}
+                <button type="button" class="btn btn-danger active btn-xs downvote_post" id="{{ sticky.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-danger btn-xs downvote_post" id="{{ sticky.id }}">
+                    <span class="span6 glyphicon glyphicon-arrow-down"></span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-warning btn-xs post-expand">
+                            <span class="span6 glyphicon glyphicon-fullscreen"></span>  Expand
+                        </button>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="panel panel-warning">
+                            <div class="panel-body">
+                                <div class="col-md-12">
+                                    <b class="text-warning">{{ sticky.title }}</b>
+                                </div>
+                                <div class="col-md-12">
+                                   <b class="text-warning">
+                                       <i>{{  ago.format(sticky.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=sticky.get_user_name()) }}">{{ sticky.get_user_name() }}</a> in <a href="#">/fr/{{ sticky.get_subfreddit_path() }}</a>
+                                   </b>
+                                </div>
+                                <div class="col-md-12 post-extra" style="display: none; padding-top:4%;">
+                                    {% if sticky.type == 0 %}
+                                    <blockquote>
+                                        <p>{{ sticky.post_text }}</p>
+                                    </blockquote>
+                                    {% elif sticky.type == 1 %}
+                                    <img src="{{ sticky.media_url }}" alt="..." class="img-responsive">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <a href="{{ url_for('render_post', id=sticky.id) }}">{{ sticky.get_comment_count() }} comments</a>
+                                {% if is_mod %}
+                                <div class="pull-right">
+                                    <div class="post_actions">
+                                        <button class="btn btn-link edit_post" id="{{ sticky.id }}" style="padding: 0;">Edit</button>
+                                        <button class="btn btn-link unsticky_post" id="{{ sticky.id }}" style="padding: 0;">Unsticky</button>
+                                        <button class="btn btn-link delete_post" id="{{ sticky.id }}" style="padding: 0;">Delete</button>
+                                    </div>
+                                    <div class="action_confirmation" operation="" id="{{ sticky.id }}" in_post="false" style="display: none;">
+                                        are you sure?
+                                        <button class="btn btn-link yes_confirmation" id="{{ sticky.id }}" style="padding: 0;">yes</button> /
+                                        <button class="btn btn-link no_confirmation" id="{{ sticky.id }}" style="padding: 0;">no</button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% endif %}
     {% for post in posts %}
     <div class="row">
         <div class="col-md-2 text-center" style="padding-left: 5%;">
@@ -67,7 +157,7 @@
                                     {{ post.title }}
                                 </div>
                                 <div class="col-md-12">
-                                   <i>{{  ago.format(post.date_posted, date.datetime.now()) }}</i> by <a href="u/{{ post.get_user_name() }}">{{ post.get_user_name() }}</a> in <a href="fr/{{ post.get_subfreddit_path() }}">/fr/{{ post.get_subfreddit_path() }}</a>
+                                   <i>{{  ago.format(post.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=post.get_user_name()) }}">{{ post.get_user_name() }}</a> in <a href="#">/fr/{{ post.get_subfreddit_path() }}</a>
                                 </div>
                                 <div class="col-md-12 post-extra" style="display: none; padding-top:4%;">
                                     {% if post.type == 0 %}
@@ -83,7 +173,16 @@
                                 <a href="{{ url_for('render_post', id=post.id) }}">{{ post.get_comment_count() }} comments</a>
                                 {% if is_mod %}
                                 <div class="pull-right">
-                                    <a class="delete-post" id="{{ post.id }}" href="">Delete</a>
+                                    <div class="post_actions">
+                                        <button class="btn btn-link edit_post" id="{{ post.id }}" style="padding: 0;">Edit</button>
+                                        <button class="btn btn-link sticky_post" id="{{ post.id }}" style="padding: 0;">Sticky</button>
+                                        <button class="btn btn-link delete_post" id="{{ post.id }}" style="padding: 0;">Delete</button>
+                                    </div>
+                                    <div class="action_confirmation" operation="" id="{{ post.id }}" in_post="false" style="display: none;">
+                                        are you sure?
+                                        <button class="btn btn-link yes_confirmation" id="{{ post.id }}" style="padding: 0;">yes</button> /
+                                        <button class="btn btn-link no_confirmation" id="{{ post.id }}" style="padding: 0;">no</button>
+                                    </div>
                                 </div>
                                 {% endif %}
                             </div>

@@ -72,20 +72,32 @@ class subfreddit:
         posts = []
 
         if sort == "hot":
-            self.db.getCursor().execute("SELECT * FROM posts WHERE subfreddit = %s AND date_posted <= "
+            self.db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND sticky = 0 AND subfreddit = %s AND date_posted <= "
                                         "(now()::timestamp + INTERVAL '3 HOURS') LIMIT 20", (self.id, ))
 
         if sort == "new":
-            self.db.getCursor().execute("SELECT * FROM posts WHERE subfreddit = %s ORDER BY date_posted DESC LIMIT 20", (self.id,))
+            self.db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND sticky = 0 AND subfreddit = %s ORDER BY date_posted DESC LIMIT 20", (self.id,))
 
         if sort == "top":
-            self.db.getCursor().execute("SELECT * FROM posts WHERE subfreddit = %s ORDER BY vote_count DESC LIMIT 20",
+            self.db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND sticky = 0 AND subfreddit = %s ORDER BY vote_count DESC LIMIT 20",
                                         (self.id,))
 
         rows = self.db.getCursor().fetchall()
 
         for row in rows:
-            posts.append(post(row["id"], self.db, self.id, row["type"], row["vote_count"], row["title"],
+            posts.append(post(row["id"], self.db, self.id, row["type"], row["vote_count"], row["sticky"], row["title"],
                               row["media_url"], row["post_text"], row["date_posted"], row["user_id"]))
 
         return posts
+
+    def is_owner(self, user_id):
+        return self.creator_id == user_id
+
+    def get_sticky_post(self):
+        self.db.getCursor().execute("SELECT id FROM posts WHERE soft_deleted = 0 AND subfreddit = %s AND sticky = 1", (self.id, ))
+
+        if self.db.getCursor().rowcount == 1:
+            post_id = self.db.getCursor().fetchone()[0]
+            return post(post_id, self.db)
+
+        return None
