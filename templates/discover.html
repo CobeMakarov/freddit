@@ -1,0 +1,124 @@
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+    <!--suppress ALL -->
+<div class="col-md-8">
+    <div class="row" style="padding-bottom: 7%; padding-right: 10%">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="page-header" style="margin: 0%;">
+                <h1>
+                    Discover Subfreddits
+                    <div class="pull-right">
+                        <div class="dropdown" style="display: inline-block">
+                            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="padding: 15%">
+                                Sort
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('discover_subfreddits') }}" id="sort-discover-popular">Popular</a></li>
+                                <li><a href="{{ url_for('discover_subfreddits_sort', sort='new') }}" id="sort-discover-new">New</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </h1>
+                <h3>
+                    The
+                    {% if sort == "popular" %}
+                    <i>most popular</i>
+                    {% elif sort == "new" %}
+                    <i>newest</i>
+                    {% endif %}
+                    subfreddits
+                </h3>
+            </div>
+        </div>
+    </div>
+    {% if subfreddits|length == 0 %}
+    <div class="alert alert-danger" role="alert" style="padding: 2%;">
+        <b>No Subfreddit Exist!</b> want to create one? click <a href="{{ url_for('create_sub') }}" class="alert-link">here</a>
+    </div>
+    {% endif %}
+    {% for sub in subfreddits %}
+    {% set sub_count = sub.get_subscribe_count() %}
+    <div class="col-md-12" style="padding-right: 4%">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-1"><h3>{{ loop.index }}.</h3></div>
+            <div class="col-md-9">
+                <h4><a href="fr/{{ sub.path }}">{{ sub.title }}</a> <i>/fr/{{sub.path}}</i></h4>
+                <h5>
+                    <i>
+                        {% if sub_count <= 1 %}
+                        {{ sub_count }} {{ sub.subscriber_name }}
+                        {% else %}
+                        {{ sub_count }} {{ sub.subscriber_name }}s
+                        {% endif %}
+                    </i>
+                </h5>
+                <h6>{{ sub.desc }}</h6>
+            </div>
+            <div class="col-md-1">
+                {% if client.is_subscribed(sub.id) %}
+                <a href="{{ url_for('unsubscribe', id=sub.id) }}" type="button" class="btn btn-danger btn-xs">Unsubscribe</a>
+                {% else %}
+                <a href="{{ url_for('subscribe', id=sub.id) }}" type="button" class="btn btn-success btn-xs">Subscribe</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-9"><hr /></div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="col-md-4" ng-controller="SearchController">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="row" style="padding-bottom: 5%;">
+            <div class="col-md-12">
+                <form class="form">
+                    <div class="row" style="padding-bottom: 5%;">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" placeholder="Search Freddit" id="search_query" />
+                            <span id="search_text" class="help-block text-warning" style="display:none;">searching...</span>
+                        </div>
+                    </div>
+                    <div class="btn-group btn-group-justified">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info active" id="search_users">Users</button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info" id="search_subfreddits">Subfreddits</button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info" id="search_posts">Posts</button>
+                        </div>
+                    </div>
+                    <hr>
+                </form>
+                <div class="pre-scrollable">
+                    <div ng-if="search_results.length > 0">
+                        <div class="row" ng-repeat="sr in search_results">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <h4><a href="{{ '{{ sr.link }}' }}" ng-bind="sr.name"></a> {{ '{{ sr.extra }}' }}</h4>
+                                <h5 ng-bind="sr.desc"></h5>
+                                <hr>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div ng-if="search_results.length <= 0">
+                        No results found!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

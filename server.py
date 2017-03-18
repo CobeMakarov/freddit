@@ -28,7 +28,7 @@ db = database()  # create a database object
 
 chat_manager = ""
 
-client = "" # march 6, 10:09pm; next time u open this program work on sticcy posts
+client = ""
 
 @app.route('/')
 def frontpage():
@@ -44,10 +44,9 @@ def frontpage():
             print("[Site Log] " + client.username + " has dark mode enabled, let's enable it sitewide.")
 
         return render_template('front_page.html', client=client, posts=client.build_frontpage(), subfreddits=client.subfreddits,
-                               ago=timeago, date=datetime, page_title="Freddit: Front Page")
+                               ago=timeago, date=datetime, page_title="Freddit: Front Page", misc=misc)
 
     return render_template('authenticate.html')
-
 
 @app.route('/authenticate', methods=['GET', 'POST'])
 def authenticate():
@@ -158,7 +157,7 @@ def render_sub(name=None):
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
                                    sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
-                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post())
+                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
 
 @app.route('/fr/<name>/<sort>')
 def render_sub_sort(name=None, sort=None):
@@ -187,7 +186,7 @@ def render_sub_sort(name=None, sort=None):
             return render_template('subfreddit.html',
                                    client=client, posts=sub.get_posts(sort), subfreddits=client.subfreddits,
                                    sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
-                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post())
+                                   is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
 
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
@@ -288,7 +287,6 @@ def render_user(name=None):
 def settings():
     return None
 
-
 @app.route('/settings/create', methods=['GET', 'POST'])
 def create_sub():
     if not session.get('authenticated'):
@@ -321,7 +319,7 @@ def create_sub():
         ##return redirect(url_for("renderSubFreddit", name=path))
         return '3'
     else:
-        return render_template('front_page_create_subs.html', client=client, subfreddits=client.subfreddits,
+        return render_template('front_page_create_sub.html', client=client, subfreddits=client.subfreddits,
                                page_title="Freddit: Create Subfreddit")
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -338,6 +336,40 @@ def render_chat():
     client = user(session['user_id'], db)
 
     return render_template('chat.html', client=client, page_title="Freddit: Chatbox")
+
+@app.route('/discover')
+def discover_subfreddits():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    subs = subfreddit.discover(db)
+
+    return render_template('discover.html', client=client, page_title="Freddit: Discover",
+                           subfreddits=subs, sort="popular")
+
+@app.route('/discover/<sort>')
+def discover_subfreddits_sort(sort):
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    if sort is None:
+        sort = "popular"
+
+    if sort != "popular" and sort != "new":
+        sort = "popular"
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    subs = subfreddit.discover(db, sort)
+
+    return render_template('discover.html', client=client, page_title="Freddit: Discover",
+                           subfreddits=subs, sort=sort)
 
 # post actions (posting a thread, commenting on a thread, voting on a thread or comment)
 
@@ -522,6 +554,7 @@ def unsticky():
         p.unsticky()
 
         return '2'
+
 # socket actions
 
 @socketio.on('connect')
@@ -593,7 +626,7 @@ def try_search(query, param):
 
     results = ""
 
-    print query
+    query = query.lower()
 
     if param == "users":
         results = search_for.users(query, db)

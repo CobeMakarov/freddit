@@ -2,7 +2,7 @@ from post import post
 
 class subfreddit:
     id, creator_id = 0, 0
-    path, title, desc, db = "", "", "", ""
+    path, title, desc, subscriber_name, db = "", "", "", "", ""
 
     moderators = []
 
@@ -26,7 +26,28 @@ class subfreddit:
 
         return path
 
-    def __init__(self, id, db, path=None, title=None, creator=None, desc=None):
+    @staticmethod
+    def discover(db, sort=None):
+        subs = []
+        if sort is None:
+            db.getCursor().execute("SELECT subfreddits.*, COUNT(user_subfreddits.*) AS sub_count "
+                                   "FROM subfreddits LEFT JOIN user_subfreddits ON subfreddits.id = user_subfreddits.subfreddit_id "
+                                   "GROUP BY subfreddits.id ORDER BY sub_count DESC LIMIT 10")
+        else:
+            if sort == "new":
+                db.getCursor().execute("SELECT * FROM subfreddits ORDER BY id DESC LIMIT 10")
+
+        rows = db.getCursor().fetchall()
+
+        for row in rows:
+            subs.append(subfreddit(row["id"], db, row["path"], row["title"], row["creator_id"],
+                                   row["description"], row["subscriber_name"]))
+
+        print len(subs)
+
+        return subs
+
+    def __init__(self, id, db, path=None, title=None, creator=None, desc=None, subscriber_name=None):
         self.db = db
 
         if path is not None and id == 0:
@@ -45,6 +66,7 @@ class subfreddit:
             self.desc = row["description"]
 
             self.creator_id = row["creator_id"]
+            self.subscriber_name = row["subscriber_name"]
         else:
             self.id = id
 
@@ -58,6 +80,7 @@ class subfreddit:
                 self.desc = row["description"]
 
                 self.creator_id = row["creator_id"]
+                self.subscriber_name = row["subscriber_name"]
             else:
                 self.id = id
                 self.path = path
@@ -65,6 +88,7 @@ class subfreddit:
                 self.desc = desc
 
                 self.creator_id = creator
+                self.subscriber_name = subscriber_name
 
                 self.db = db
 
@@ -89,6 +113,13 @@ class subfreddit:
                               row["media_url"], row["post_text"], row["date_posted"], row["user_id"]))
 
         return posts
+
+    def get_subscribe_count(self):
+        self.db.getCursor().execute("SELECT COUNT(*) FROM user_subfreddits WHERE subfreddit_id = %s", (self.id, ))
+
+        count = self.db.getCursor().fetchone()[0]
+
+        return count
 
     def is_owner(self, user_id):
         return self.creator_id == user_id

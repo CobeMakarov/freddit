@@ -177,7 +177,7 @@
                             {% endif %}
                         </p>
                     {% elif post.type == 1 %}
-                        {{ misc.parse_media(post.media) }}
+                        {{ misc.parse_media(post.media_url)|safe }}
                     {% endif %}
                 </div>
                 <div class="panel-footer">

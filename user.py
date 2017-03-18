@@ -162,19 +162,21 @@ class user:
         return posts
 
     def subscribe(self, id):
-        self.db.getCursor().execute("INSERT INTO user_subfreddits (user_id, subfreddit_id) VALUES (%s, %s)", (self.id, id))
-
-        self.db.commit()
-
         if not misc.obj_exists_key("id", id, self.subfreddits):
+            self.db.getCursor().execute("INSERT INTO user_subfreddits (user_id, subfreddit_id) VALUES (%s, %s)",
+                                        (self.id, id))
+
+            self.db.commit()
+
             self.subfreddits.append(subfreddit(id, self.db))
 
     def unsubscribe(self, id):
-        self.db.getCursor().execute("DELETE FROM user_subfreddits WHERE user_id = %s AND subfreddit_id = %s", (self.id, id))
+        if misc.obj_exists_key("id", id, self.subfreddits):
+            self.db.getCursor().execute("DELETE FROM user_subfreddits WHERE user_id = %s AND subfreddit_id = %s", (self.id, id))
 
-        self.db.commit()
+            self.db.commit()
 
-        misc.remove_by_key('id', id, self.subfreddits)
+            misc.remove_by_key('id', id, self.subfreddits)
 
     def moderate(self, id):
         self.db.getCursor().execute("INSERT INTO subfreddits_moderators (user_id, subfreddit_id) VALUES (%s, %s)",

@@ -16,7 +16,7 @@
             </ul>
         </div>
     </div>
-    {% if sticky.title|length > 0 %}
+    {% if sticky is defined and sticky.title|length > 0 %}
     <div class="row">
         <div class="col-md-2 text-center" style="padding-left: 5%;">
             {% set client_vote_status = client.has_voted(sticky.id, true) %}
@@ -71,13 +71,13 @@
                                        <i>{{  ago.format(sticky.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=sticky.get_user_name()) }}">{{ sticky.get_user_name() }}</a> in <a href="#">/fr/{{ sticky.get_subfreddit_path() }}</a>
                                    </b>
                                 </div>
-                                <div class="col-md-12 post-extra" style="display: none; padding-top:4%;">
+                                <div class="col-md-12 post-extra" style="padding-top:4%;">
                                     {% if sticky.type == 0 %}
                                     <blockquote>
                                         <p>{{ sticky.post_text }}</p>
                                     </blockquote>
                                     {% elif sticky.type == 1 %}
-                                    <img src="{{ sticky.media_url }}" alt="..." class="img-responsive">
+                                    {{ misc.parse_media(post.media_url)|safe }}
                                     {% endif %}
                                 </div>
                             </div>
@@ -150,7 +150,7 @@
                             <span class="span6 glyphicon glyphicon-fullscreen"></span>  Expand
                         </button>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-10">
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <div class="col-md-12">
@@ -165,7 +165,7 @@
                                         <p>{{ post.post_text }}</p>
                                     </blockquote>
                                     {% elif post.type == 1 %}
-                                    <img src="{{ post.media_url }}" alt="..." class="img-responsive">
+                                    {{ misc.parse_media(post.media_url)|safe }}
                                     {% endif %}
                                 </div>
                             </div>
@@ -227,6 +227,7 @@
                 </div>
             </div>
         </div>
+        {% set sub_count = sub.get_subscribe_count() %}
         <div class="well">
             <div class="row">
                 <div class="col-md-12">
@@ -235,7 +236,14 @@
             </div>
             <div class="row">
                 <div class="col-md-8">
-                    <i>/fr/{{sub.path}}</i>
+                    <i>/fr/{{sub.path}}</i> <br />
+                    <i>
+                        {% if sub_count <= 1 %}
+                        {{ sub_count }} <b>{{ sub.subscriber_name }}</b>
+                        {% else %}
+                        {{ sub_count }} <b>{{ sub.subscriber_name }}s</b>
+                        {% endif %}
+                    </i>
                 </div>
                 <div class="col-md-2">
                     {% if client.is_subscribed(sub.id) %}
