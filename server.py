@@ -366,7 +366,7 @@ def discover_subfreddits():
     subs = subfreddit.discover(db)
 
     return render_template('discover.html', client=client, page_title="Freddit: Discover",
-                           subfreddits=subs, sort="popular")
+                           subfreddits=client.subfreddits, discovered_subfreddits=subs, sort="popular")
 
 @app.route('/discover/<sort>')
 def discover_subfreddits_sort(sort):
@@ -386,7 +386,7 @@ def discover_subfreddits_sort(sort):
     subs = subfreddit.discover(db, sort)
 
     return render_template('discover.html', client=client, page_title="Freddit: Discover",
-                           subfreddits=subs, sort=sort)
+                           subfreddits=client.subfreddits, discovered_subfreddits=subs, sort=sort)
 
 # post actions (posting a thread, commenting on a thread, voting on a thread or comment)
 
