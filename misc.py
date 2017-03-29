@@ -1,27 +1,5 @@
 class misc:
     @staticmethod
-    def obj_exists_key(key, val, list):
-        found = False
-
-        for obj in list:
-            found = (getattr(obj, key) == val)
-
-            if found:
-                break
-
-        return found
-
-    @staticmethod
-    def get_obj_key(key, val, list):
-        res = None
-
-        for obj in list:
-            if getattr(obj, key) == val:
-                res = obj
-
-        return res
-
-    @staticmethod
     def get_objs_key(key, val, list):
         res = []
 
@@ -63,7 +41,7 @@ class misc:
         elif "imgur.com" in media:  #imgur
             if "/gallery/" in media or "/a/" in media:  #imgur gallery
                 simple_link = media.replace("/gallery/", "/").replace("/a/", "/")
-                imgur_id = media[len(media) - 5 : len(media)]
+                imgur_id = media[len(media) - 5: len(media)]
 
                 return '<blockquote class="imgur-embed-pub" lang="en" data-id="a/' + imgur_id + '"><a href="' + simple_link + '"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>'
             elif "i.imgur.com" in media:  #imgur in embed format
@@ -84,4 +62,6 @@ class misc:
             return '<div style="position:relative;padding-bottom:57%"><iframe src="' + media.replace("gfycat.com/", "gfycat.com/ifr/") + '" frameborder="0" scrolling="no" width="100%" height="100%" style="position:absolute;top:0;left:0;" allowfullscreen></iframe></div>'
         elif media.endswith(image_types):
             return '<img src="' + media + '" class="img-responsive" />'
+
+        return ''
 

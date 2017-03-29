@@ -1,6 +1,5 @@
+
 class comment:
-    id, post_id, parent, vote_count, user_id = 0, 0, 0, 0, 0
-    text, date_posted, user, db = "", "", "", ""
 
     @staticmethod
     def update_vote(post_id, vote, db, jump=False):
@@ -10,14 +9,14 @@ class comment:
             if jump:
                 num = 2
 
-            db.getCursor().execute("UPDATE comments SET vote_count = vote_count + %s WHERE id = %s", (num, post_id))
+            db.get_cursor().execute("UPDATE comments SET vote_count = vote_count + %s WHERE id = %s", (num, post_id))
         else:
             num = 1
 
             if jump:
                 num = 2
 
-            db.getCursor().execute("UPDATE comments SET vote_count = vote_count - %s WHERE id = %s", (num, post_id))
+            db.get_cursor().execute("UPDATE comments SET vote_count = vote_count - %s WHERE id = %s", (num, post_id))
         db.commit()
 
     def __init__(self, id, db, post_id=0, parent=0, vote_count=0, user_id=0, text=None, date_posted=None):
@@ -27,10 +26,10 @@ class comment:
         self.db = db
 
         if post_id is 0:
-            self.db.getCursor().execute("SELECT * FROM comments WHERE id = %s", (self.id, ))
+            self.db.get_cursor().execute("SELECT * FROM comments WHERE id = %s", (self.id,))
 
-            p = self.db.getCursor().fetchone()
-            count = self.db.getCursor().rowcount
+            p = self.db.get_cursor().fetchone()
+            count = self.db.get_cursor().rowcount
 
             if count == 0:
                 post_id = 0
@@ -54,6 +53,11 @@ class comment:
             self.user = user(user_id, self.db)
 
     def update(self):
-        self.db.getCursor().execute("UPDATE comments SET vote_count = %s, text = %s WHERE id = %s",
-                                    (self.vote_count, self.text, self.id))
+        self.db.get_cursor().execute("UPDATE comments SET vote_count = %s, text = %s WHERE id = %s",
+                                     (self.vote_count, self.text, self.id))
+
+    def get_post_title(self):
+        self.db.get_cursor().execute("SELECT title FROM posts WHERE id = %s", (self.post_id, ))
+
+        return self.db.get_cursor().fetchone()[0]
 

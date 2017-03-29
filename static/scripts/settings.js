@@ -36,4 +36,11 @@ $(document).ready(function() {
             $(this).fadeIn(500);
         });
     })
+
+    $("#admin_flush").on('click', function() {
+        $.post('/flush', function() {
+            console.log('flush done');
+        });
+
+    })
 })

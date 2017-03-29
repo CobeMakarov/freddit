@@ -6,10 +6,10 @@ class search:
     def subfreddits(term, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM subfreddits WHERE path LIKE %s OR title LIKE %s OR description LIKE %s",
-                               ('%' + str(term) + '%', '%' + str(term) + '%', '%' + str(term) + '%'))
+        db.get_cursor().execute("SELECT * FROM subfreddits WHERE path LIKE %s OR title LIKE %s OR description LIKE %s",
+                                ('%' + str(term) + '%', '%' + str(term) + '%', '%' + str(term) + '%'))
 
-        rows = db.getCursor().fetchall()
+        rows = db.get_cursor().fetchall()
 
         for row in rows:
             temp = {'link': '/fr/' + row["path"],
@@ -25,9 +25,9 @@ class search:
     def users(term, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM users WHERE username LIKE %s", ('%' + str(term) + '%', ))
+        db.get_cursor().execute("SELECT * FROM users WHERE username LIKE %s", ('%' + str(term) + '%',))
 
-        rows = db.getCursor().fetchall()
+        rows = db.get_cursor().fetchall()
 
         for row in rows:
             karma = user.get_karma_by_id(db, int(row["id"]))
@@ -45,10 +45,10 @@ class search:
     def posts(term, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s",
-                               ('%' + str(term) + '%', '%' + str(term) + '%'))
+        db.get_cursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s",
+                                ('%' + str(term) + '%', '%' + str(term) + '%'))
 
-        rows = db.getCursor().fetchall()
+        rows = db.get_cursor().fetchall()
 
         for row in rows:
             temp = {'link': '/p/' + str(row["id"]),
@@ -64,10 +64,10 @@ class search:
     def posts_in_sub(term, sub, db):
         results = []
 
-        db.getCursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s AND subfreddit = %s",
-                               ('%' + str(term) + '%', '%' + str(term) + '%', sub))
+        db.get_cursor().execute("SELECT * FROM posts WHERE soft_deleted = 0 AND title LIKE %s OR post_text LIKE %s AND subfreddit = %s",
+                                ('%' + str(term) + '%', '%' + str(term) + '%', sub))
 
-        rows = db.getCursor().fetchall()
+        rows = db.get_cursor().fetchall()
 
         for row in rows:
             temp = {'link': '/p/' + str(row["id"]),

@@ -13,8 +13,8 @@ class chat:
 
         if (datetime.datetime.now() - self.last_bulk_save).seconds >= 600 and len(messages) > 0:
             for msg in messages:
-                self.db.getCursor().execute("INSERT INTO chat_messages(user_id, user_name, message_text, is_admin) VALUES (%s, %s, %s, %s)",
-                                       (msg["user"]["id"], msg["user"]["name"], msg["text"], (1 if msg["user"]["is_admin"] else 0)))
+                self.db.get_cursor().execute("INSERT INTO chat_messages(user_id, user_name, message_text, is_admin) VALUES (%s, %s, %s, %s)",
+                                             (msg["user"]["id"], msg["user"]["name"], msg["text"], (1 if msg["user"]["is_admin"] else 0)))
 
             self.db.commit()
             self.update_last_save()
@@ -30,9 +30,9 @@ class chat:
     def get_latest_messages(self):
         messages = []
 
-        self.db.getCursor().execute("SELECT * FROM chat_messages ORDER BY date_posted ASC LIMIT 20")
+        self.db.get_cursor().execute("SELECT * FROM chat_messages ORDER BY date_posted ASC LIMIT 20")
 
-        rows = self.db.getCursor().fetchall()
+        rows = self.db.get_cursor().fetchall()
 
         for row in rows:
             temp = {'text': row['message_text'],
@@ -46,13 +46,13 @@ class chat:
         return messages
 
     def get_last_save(self):
-        self.db.getCursor().execute("SELECT last_bulk_save FROM chat_config WHERE id = 1")
+        self.db.get_cursor().execute("SELECT last_bulk_save FROM chat_config WHERE id = 1")
 
-        self.last_bulk_save = self.db.getCursor().fetchone()[0]
+        self.last_bulk_save = self.db.get_cursor().fetchone()[0]
 
     def update_last_save(self):
         self.last_bulk_save = datetime.datetime.now()
 
-        self.db.getCursor().execute("UPDATE chat_config SET last_bulk_save = now()::timestamp WHERE id = 1")
+        self.db.get_cursor().execute("UPDATE chat_config SET last_bulk_save = now()::timestamp WHERE id = 1")
 
         print("updated last bulk_save to " + str(self.last_bulk_save))

@@ -1,0 +1,158 @@
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+<div class="col-md-8">
+    <div class="col-md-1"></div>
+    <div class="col-md-11" style="padding-bottom: 5%; padding-left: 3%;">
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>{{ profile.username }}'s favorite subfreddits</h4>
+                </div>
+                <table class="table table-striped">
+                    <tbody>
+                        {% for key, value in profile.get_submission_stats().items() %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ value }} submissions in <a href="{{ url_for('render_sub', name=key) }}">/fr/{{ key }}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-11" style="padding-bottom: 5%; padding-left: 3%;">
+        <div class="row">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h4>
+                        {{ profile.username }}'s submissions
+                    </h4>
+                    <div class="pull-right" style="margin-top: -4.5%; padding: 0;">
+                        <button type="button" class="btn btn-link" style="color: white; padding: 0; text-decoration: none;"><b>Sort:</b></button> <!-- this is only a button so it'll line up correctly with the other buttons !-->
+                        <button type="button" class="btn btn-link" id="submission-sort-top-toggle" style="color: white; padding: 0;">Top</button>
+                        <button type="button" class="btn btn-link" id="submission-sort-new-toggle" style="color: white; padding: 0;">New</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <div id="submission-sort-top">
+                        {% for top_submission in profile.get_posts('top', 6) %}
+                            <div style="padding-bottom: 2%;">
+                                {% if top_submission.vote_count > 0 %}
+                                [ <b class="text-success">+{{ top_submission.vote_count }}</b> ]
+                                {% elif top_submission.vote_count < 0 %}
+                                [ <b class="text-danger">-{{ top_submission.vote_count }}</b> ]
+                                {% elif top_submission.vote_count == 0 %}
+                                [ <b>{{ top_submission.vote_count }}</b> ]
+                                {% endif %}
+                                <a href="{{ url_for('render_post', id=top_submission.id) }}"> {{ top_submission.title }} </a> submitted {{  ago.format(top_submission.date_posted, date.datetime.now()) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="submission-sort-new" style="display: none;">
+                        {% for new_submission in profile.get_posts('new', 6) %}
+                            <div style="padding-bottom: 2%;">
+                                {% if new_submission.vote_count > 0 %}
+                                [ <b class="text-success">+{{ new_submission.vote_count }}</b> ]
+                                {% elif new_submission.vote_count < 0 %}
+                                [ <b class="text-danger">-{{ new_submission.vote_count }}</b> ]
+                                {% elif new_submission.vote_count == 0 %}
+                                [ <b>{{ new_submission.vote_count }}</b> ]
+                                {% endif %}
+                                <a href="{{ url_for('render_post', id=new_submission.id) }}"> {{ new_submission.title }} </a> submitted {{  ago.format(new_submission.date_posted, date.datetime.now()) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-11" style="padding-bottom: 5%; padding-left: 3%;">
+        <div class="row">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>
+                        {{ profile.username }}'s comments
+                    </h4>
+                    <div class="pull-right" style="margin-top: -4.5%; padding: 0;">
+                        <button type="button" class="btn btn-link" style="color: white; padding: 0; text-decoration: none;"><b>Sort:</b></button>
+                        <button type="button" class="btn btn-link" id="comment-sort-top-toggle" style="color: white; padding: 0;">Top</button>
+                        <button type="button" class="btn btn-link" id="comment-sort-new-toggle" style="color: white; padding: 0;">New</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <div id="comment-sort-top">
+                        {% for top_comment in profile.get_comments('top', 6) %}
+                        <div style="padding-bottom: 3%">
+                            <blockquote>
+                                <p>{{ top_comment.text }} </p>
+                                <footer>
+                                {% if top_comment.vote_count > 0 %}
+                                    [ <b class="text-success">+{{ top_comment.vote_count }}</b> ]
+                                {% elif top_comment.vote_count < 0 %}
+                                    [ <b class="text-danger">-{{ top_comment.vote_count }}</b> ]
+                                {% elif top_comment.vote_count == 0 %}
+                                    [ <b>{{ top_comment.vote_count }}</b> ]
+                                {% endif %}
+                                on the post <a href="{{ url_for('render_post', id=top_comment.id) }}"> {{ top_comment.get_post_title() }} </a> {{  ago.format(top_comment.date_posted, date.datetime.now()) }}
+                                </footer>
+                            </blockquote>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="comment-sort-new" style="display: none;">
+                        {% for new_comment in profile.get_comments('new', 5) %}
+                        <div style="padding-bottom: 3%">
+                            <blockquote>
+                                <p>{{ new_comment.text }} </p>
+                                <footer>
+                                {% if new_comment.vote_count > 0 %}
+                                    [ <b class="text-success">+{{ new_comment.vote_count }}</b> ]
+                                {% elif new_comment.vote_count < 0 %}
+                                    [ <b class="text-danger">-{{ new_comment.vote_count }}</b> ]
+                                {% elif new_comment.vote_count == 0 %}
+                                    [ <b>{{ new_comment.vote_count }}</b> ]
+                                {% endif %}
+                                on the post <a href="{{ url_for('render_post', id=new_comment.id) }}"> {{ new_comment.get_post_title() }} </a> {{  ago.format(new_comment.date_posted, date.datetime.now()) }}
+                                </footer>
+                            </blockquote>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="well">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>{{ profile.username }}</h4>
+                    {% if profile.admin == 1 %}
+                    <h5 class="text-danger">admin</h5>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h5><b>5</b> comment karma</h5>
+                    <h5><b>5</b> submission karma</h5>
+                </div>
+                <div class="col-md-12">
+                    <b>moderated subs</b> <br />
+                    {% for modded_sub in profile.get_moderated_subs() %}
+                        <a href="{{ url_for('render_sub', name=modded_sub.path) }}">/fr/{{ modded_sub.path }}</a> <br/>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

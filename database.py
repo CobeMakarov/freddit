@@ -1,5 +1,8 @@
-import psycopg2, psycopg2.extras
+import psycopg2
+import psycopg2.extras
+
 from lib.config import config
+
 
 class database:
     host, username, password, database = "", "", "", ""
@@ -29,7 +32,7 @@ class database:
         except:
             print("[DATABASE] Can't Connect!")
 
-    def getCursor(self):
+    def get_cursor(self):
         return self.cursor
 
     def commit(self):

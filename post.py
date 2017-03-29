@@ -1,13 +1,7 @@
 from comment import comment
-from misc import misc
 
 
 class post:
-    id, subfreddit, type, vote_count, user_id, is_sticky = 0, 0, 0, 0, 0, 0
-    title, media_url, post_text, date_posted, db = "", "", "", "", ""
-
-    comments = []
-
     @staticmethod
     def update_vote(post_id, vote, db, jump=False):
         if int(vote) is 1:
@@ -16,14 +10,14 @@ class post:
             if jump:
                 num = 2
 
-            db.getCursor().execute("UPDATE posts SET vote_count = vote_count + %s WHERE id = %s", (num, post_id))
+            db.get_cursor().execute("UPDATE posts SET vote_count = vote_count + %s WHERE id = %s", (num, post_id))
         else:
             num = 1
 
             if jump:
                 num = 2
 
-            db.getCursor().execute("UPDATE posts SET vote_count = vote_count - %s WHERE id = %s", (num, post_id))
+            db.get_cursor().execute("UPDATE posts SET vote_count = vote_count - %s WHERE id = %s", (num, post_id))
         db.commit()
 
     def __init__(self, id, db, subfreddit=None, type=0, vote_count=0, sticky=0,
@@ -31,11 +25,13 @@ class post:
         self.id = id
         self.db = db
 
-        if subfreddit is None:
-            self.db.getCursor().execute("SELECT * FROM posts WHERE id = %s", (self.id, ))
+        self.comments = []
 
-            p = self.db.getCursor().fetchone()
-            count = self.db.getCursor().rowcount
+        if subfreddit is None:
+            self.db.get_cursor().execute("SELECT * FROM posts WHERE id = %s", (self.id,))
+
+            p = self.db.get_cursor().fetchone()
+            count = self.db.get_cursor().rowcount
 
             if count == 0:
                 subfreddit = None
@@ -66,8 +62,6 @@ class post:
             self.load_comments("top")
 
     def load_comments(self, sort):
-        self.comments = []
-
         extra = ""
 
         if sort is "top":
@@ -76,48 +70,48 @@ class post:
         if sort is "new":
             extra = " ORDER BY date_posted DESC"
 
-        self.db.getCursor().execute("SELECT id FROM comments WHERE post_id = %s" + extra, (self.id,))
+        self.db.get_cursor().execute("SELECT id FROM comments WHERE post_id = %s" + extra, (self.id,))
 
-        rows = self.db.getCursor().fetchall()
+        rows = self.db.get_cursor().fetchall()
 
         for row in rows:
             comment_id = row["id"]
 
             cmt = comment(comment_id, self.db)
 
-            if not misc.obj_exists_key("id", cmt.id, self.comments):  ##lazy fix for .. code
+            if int(cmt.id) not in [c.id for c in self.comments]:  ##lazy fix for .. code
                 self.comments.append(cmt)
 
     def update(self):
-        self.db.getCursor().execute("UPDATE posts SET vote_count = %s, post_text = %s, sticky = %s WHERE id = %s",
-                                    (self.vote_count, self.post_text, self.is_sticky, self.id))
+        self.db.get_cursor().execute("UPDATE posts SET vote_count = %s, post_text = %s, sticky = %s WHERE id = %s",
+                                     (self.vote_count, self.post_text, self.is_sticky, self.id))
 
         self.db.commit()
 
     def get_subfreddit_path(self):
-        self.db.getCursor().execute("SELECT path FROM subfreddits WHERE id = %s", (self.subfreddit,))
+        self.db.get_cursor().execute("SELECT path FROM subfreddits WHERE id = %s", (self.subfreddit,))
 
-        path = self.db.getCursor().fetchone()[0]
+        path = self.db.get_cursor().fetchone()[0]
 
         return path
 
     def get_user_name(self):
-        self.db.getCursor().execute("SELECT username FROM users WHERE id = %s", (self.user_id,))
+        self.db.get_cursor().execute("SELECT username FROM users WHERE id = %s", (self.user_id,))
 
-        name = self.db.getCursor().fetchone()[0]
+        name = self.db.get_cursor().fetchone()[0]
 
         return name
 
     def get_comment_count(self):
-        self.db.getCursor().execute("SELECT COUNT(*) FROM comments WHERE post_id = %s", (self.id, ))
+        self.db.get_cursor().execute("SELECT COUNT(*) FROM comments WHERE post_id = %s", (self.id,))
 
-        count = self.db.getCursor().fetchone()[0]
+        count = self.db.get_cursor().fetchone()[0]
 
         return count
 
     def sticky(self):
         if self.is_sticky == 0:
-            self.db.getCursor().execute("UPDATE posts SET sticky = 0 WHERE subfreddit = %s AND sticky = 1", (self.subfreddit,))
+            self.db.get_cursor().execute("UPDATE posts SET sticky = 0 WHERE subfreddit = %s AND sticky = 1", (self.subfreddit,))
 
             self.db.commit()
 
@@ -130,11 +124,11 @@ class post:
             self.update()
 
     def delete(self):
-        self.db.getCursor().execute("UPDATE posts SET soft_deleted = 1 WHERE id = %s", (self.id,))
+        self.db.get_cursor().execute("UPDATE posts SET soft_deleted = 1 WHERE id = %s", (self.id,))
 
         self.db.commit()
 
     def undelete(self):
-        self.db.getCursor().execute("UPDATE posts SET soft_deleted = 0 WHERE id = %s", (self.id,))
+        self.db.get_cursor().execute("UPDATE posts SET soft_deleted = 0 WHERE id = %s", (self.id,))
 
         self.db.commit()

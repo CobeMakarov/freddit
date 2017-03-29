@@ -65,11 +65,11 @@ def authenticate():
             email = request.form["email"]
             password = request.form["password"]
 
-            db.getCursor().execute("SELECT id, password FROM users WHERE email = %s", (email,))
+            db.get_cursor().execute("SELECT id, password FROM users WHERE email = %s", (email,))
 
-            row = db.getCursor().fetchone()
+            row = db.get_cursor().fetchone()
 
-            if db.getCursor().rowcount < 1:
+            if db.get_cursor().rowcount < 1:
                 return '0'
 
             userId = row[0]
@@ -141,12 +141,11 @@ def render_sub(name=None):
         db.connect()
 
         if session.get('authenticated'):
-            userId = session['user_id']
-            client = user(userId, db)
+            client = user(session['user_id'], db)
 
             name = name.lower()
 
-            sub = misc.get_obj_key("path", name, client.subfreddits)
+            sub = next((x for x in client.subfreddits if x.path == name), None)
 
             if sub is None:
                 sub = subfreddit(0, db, name)
@@ -172,7 +171,7 @@ def render_sub_sort(name=None, sort=None):
 
             name = name.lower()
 
-            sub = misc.get_obj_key("path", name, client.subfreddits)
+            sub = next((x for x in client.subfreddits if x.path == name), None)
 
             if sub is None:
                 sub = subfreddit(0, db, name)
@@ -191,7 +190,7 @@ def render_sub_sort(name=None, sort=None):
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
     if id is None:
-        return None;
+        return None
 
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -207,13 +206,13 @@ def subscribe(id=None):
 
     return render_template('subfreddit.html',
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id),
-                           is_owner=sub.is_owner(client.id))
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
+                           is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
 
 @app.route('/fr/unsubscribe/<id>')
 def unsubscribe(id=None):
     if id is None:
-        return None;
+        return None
 
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -229,8 +228,8 @@ def unsubscribe(id=None):
 
     return render_template('subfreddit.html',
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
-                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title="Freddit: Front Page",
-                           is_owner=sub.is_owner(client.id))
+                           sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
+                           is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
 
 @app.route('/p/<id>')
 def render_post(id=None):
@@ -282,6 +281,24 @@ def render_post_sort(id=None, sort=None):
 def render_user(name=None):
     if name is None:
         return None
+
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    profiled_id = user.get_id_by_username(name, db)
+
+    if profiled_id == 0:
+        return "user not found."
+
+    profiled = user(profiled_id, db)
+
+    return render_template('profile.html', client=client, subfreddits=client.subfreddits, page_title=profiled.username,
+                           profile=profiled, ago=timeago, date=datetime)
+
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
@@ -494,8 +511,6 @@ def sticky():
 
         p = post_obj(id, db)
 
-        print p.title
-
         if not client.is_mod(p.subfreddit):
             return '1'  # user doesn't have permission
 
@@ -519,8 +534,6 @@ def delete():
         id = request.form["id"]
 
         p = post_obj(id, db)
-
-        print p.title
 
         if not client.is_mod(p.subfreddit):
             return '1'  # user doesn't have permission
@@ -546,8 +559,6 @@ def unsticky():
 
         p = post_obj(id, db)
 
-        print p.title
-
         if not client.is_mod(p.subfreddit):
             return '1'  # user doesn't have permission
 
@@ -555,6 +566,18 @@ def unsticky():
 
         return '2'
 
+@app.route('/flush', methods=['POST'])
+def flush():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST" and client.admin:
+        client.flush()
+    return 'flush'
 # socket actions
 
 @socketio.on('connect')
