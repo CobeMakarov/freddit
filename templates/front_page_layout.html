@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap-extra.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/jquery-ui.css') }}">
 
-        {% if sub is defined and sub.header_text|length > 4 %}
+        {% if sub is defined and sub.header_text|length >= 3 %}
         <style>
             .navbar-default .navbar-nav > li > a {
                 color: {{ sub.header_text }};
@@ -21,7 +21,7 @@
             .navbar-default .navbar-brand {
                 color: {{ sub.header_text }};
             }
-            {% if sub.header_background|length > 4 %}
+            {% if sub.header_background|length >= 3 %}
                 .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus {
                     color: {{ sub.header_text }};
                     background-color: {{ sub.header_background }};
@@ -29,7 +29,7 @@
             {% endif %}
         </style>
         {% endif %}
-        {% if sub is defined and sub.header_text|length > 4 %}
+        {% if sub is defined and sub.header_background|length >= 3 %}
         <style>
             div.navbar.navbar-default.navbar-fixed-top {
                 background-color: {{ sub.header_background }};
