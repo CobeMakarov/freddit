@@ -1,0 +1,172 @@
+{% extends "front_page_layout.html" %}
+
+{% block content %}
+    <!--suppress ALL -->
+<div class="col-md-8">
+    <div class="row" style="padding-bottom: 2%;">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="page-header" style="margin: 0%;">
+                <h1>{{ sub.title }} <small>/fr/{{ sub.path }}</small> </h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="new_sub_title" class="col-lg-3 control-label">Title</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="new_sub_title" value="{{ sub.title }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="new_sub_desc" class="col-lg-3 control-label">Desc</label>
+                    <div class="col-lg-8">
+                        <textarea class="form-control" rows="3" id="new_sub_desc" placeholder="{{ sub.desc }}">{{ sub.desc }}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Path</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" value="{{ sub.path }}" disabled>
+                        <!-- <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="sub_private"> Private
+                            </label>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Header Background</label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="new_sub_header" sub_id="{{ sub.id }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" id="test_header_color" data-toggle="tooltip" data-placement="top" title="click to test color">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Header Text Color</label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="new_sub_header_text" sub_id="{{ sub.id }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" id="test_text_color" data-toggle="tooltip" data-placement="top" title="click to test color">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7"></div>
+                <div class="col-lg-5" style="padding-left:24.5%;">
+                    <button type="button" class="btn btn-success save_sub" id="{{ sub.id }}">Save</button>
+                </div>
+                <div class="clearfix"></div>
+                <hr>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Moderators</label>
+                    <div class="col-lg-8" style="padding-top: 1.3%;">
+                        <div id="mod-container">
+                            {% for mod in sub.moderators %}
+                            <div style="padding-bottom: 3%">
+                                {{ mod.username }} <button type="button" class="btn btn-link remove_mod" user_id="{{ mod.id }}" sub_id="{{ sub.id }}" style="padding: 0;">remove</button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="new_sub_mods" sub_id="{{ sub.id }}" placeholder="add moderator (divide multiple people with ',') ">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success" id="add_mods">Add</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="affix" style="padding-right: 2%;">
+        <div class="row" style="padding-bottom: 5%;">
+            <div class="col-md-12" ng-controller="SearchController">
+                <form class="form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search within /fr/{{sub.path}}.." id="subfreddit_search" />
+                        <div class="input-group-btn">
+                            <button class="btn btn-info subfreddit_search_submit" id = "{{ sub.id }}">Search</button>
+                        </div>
+                    </div>
+                    <span id="search_text" class="help-block text-warning" style="display:none;">searching...</span>
+                </form>
+                <hr>
+                <div class="pre-scrollable">
+                    <div ng-if="search_results.length > 0">
+                        <div class="row" ng-repeat="sr in search_results">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <h4><a href="{{ '{{ sr.link }}' }}" ng-bind="sr.name"></a> {{ '{{ sr.extra }}' }}</h4>
+                                <h5 ng-bind="sr.desc"></h5>
+                                <hr>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div ng-if="search_results.length <= 0">
+                        No results found!
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% set sub_count = sub.get_subscribe_count() %}
+        <div class="well">
+            <div class="row">
+                <div class="col-md-12">
+                    <b>{{sub.title}}</b>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <i>/fr/{{sub.path}}</i> <br />
+                    <i>
+                        {% if sub_count <= 1 %}
+                        {{ sub_count }} <b>{{ sub.subscriber_name }}</b>
+                        {% else %}
+                        {{ sub_count }} <b>{{ sub.subscriber_name }}s</b>
+                        {% endif %}
+                    </i>
+                </div>
+                <div class="col-md-2">
+                    {% if client.is_subscribed(sub.id) %}
+                    <a href="{{ url_for('unsubscribe', id=sub.id) }}" type="button" class="btn btn-danger btn-xs">Unsubscribe</a>
+                    {% else %}
+                    <a href="{{ url_for('subscribe', id=sub.id) }}" type="button" class="btn btn-success btn-xs">Subscribe</a>
+                    {% endif %}
+                    {% if client.admin or is_owner %}
+                    <a href="{{ url_for('render_sub_settings', id=sub.id) }}" type="button" class="btn btn-warning btn-xs" style="margin-top: 30%;">Settings</a>
+                    {% endif %}
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-12">
+                    <p>{{sub.desc}}</p>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                {% if client.is_subscribed(sub.id) %}
+                <div class="col-md-12 text-center">
+                    <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create Post</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -31,31 +31,31 @@ $(document).ready(function() {
             'type': '1'}, function(code) {
                 switch(code) {
                     case '0':
-                        bootbox.alert("There doesn't seem to be any accounts with that login combination");
+                        alertify.error("There doesn't seem to be any accounts with that login combination");
                     break;
                     case '1':
                         window.location.reload();
                     break;
                     case '2':
-                        bootbox.alert("There seems to be a user already with that email or username");
+                        alertify.error("There seems to be a user already with that email or username");
                     break;
                     case '3':
-                        bootbox.alert("The two passwords do not match!");
+                        alertify.error("The two passwords do not match!");
                     break;
                     case '4':
-                        bootbox.alert("A field is empty, check them out!");
+                        alertify.error("A field is empty, check them out!");
                     break;
                     case '5':
-                        bootbox.alert("Please enter a valid email address");
+                        alertify.error("Please enter a valid email address");
                     break;
                     case '6ix':
-                        bootbox.alert("The minimum length for a password is 6 characters");
+                        alertify.error("The minimum length for a password is 6 characters");
                     break;
                     case '7':
-                        bootbox.alert("It seems you have some illegal characters in your username! You may only have characters & numbers.")
+                        alertify.error("It seems you have some illegal characters in your username! You may only have characters & numbers.")
                     break;
                     case '8':
-                        bootbox.alert("The username you chose is too long, 30 characters max.")
+                        alertify.error("The username you chose is too long, 30 characters max.")
                     break;
                 }
             })
@@ -71,31 +71,31 @@ $(document).ready(function() {
             'type': '1'}, function(code) {
                 switch(code) {
                     case '0':
-                        bootbox.alert("There doesn't seem to be any accounts with that login combination");
+                        alertify.error("There doesn't seem to be any accounts with that login combination");
                     break;
                     case '1':
                         window.location.reload();
                     break;
                     case '2':
-                        bootbox.alert("There seems to be a user already with that email or username");
+                        alertify.error("There seems to be a user already with that email or username");
                     break;
                     case '3':
-                        bootbox.alert("The two passwords do not match!");
+                        alertify.error("The two passwords do not match!");
                     break;
                     case '4':
-                        bootbox.alert("A field is empty, check them out!");
+                        alertify.error("A field is empty, check them out!");
                     break;
                     case '5':
-                        bootbox.alert("Please enter a valid email address");
+                        alertify.error("Please enter a valid email address");
                     break;
                     case '6ix':
-                        bootbox.alert("The minimum length for a password is 6 characters");
+                        alertify.error("The minimum length for a password is 6 characters");
                     break;
                     case '7':
-                        bootbox.alert("It seems you have some illegal characters in your username! You may only have characters & numbers.")
+                        alertify.error("It seems you have some illegal characters in your username! You may only have characters & numbers.")
                     break;
                     case '8':
-                        bootbox.alert("The username you chose is too long, 30 characters max.")
+                        alertify.error("The username you chose is too long, 30 characters max.")
                     break;
                 }
             })
@@ -107,16 +107,16 @@ $(document).ready(function() {
                  function(code) {
                     switch(code) {
                         case '0':
-                            bootbox.alert("There doesn't seem to be any accounts with that login combination");
+                            alertify.error("There doesn't seem to be any accounts with that login combination");
                         break;
                         case '1':
                             window.location.reload();
                         break;
                         case '4':
-                            bootbox.alert("A field is empty, check them out!");
+                            alertify.error("A field is empty, check them out!");
                         break;
                         case '3':
-                            bootbox.alert("passwords dont match");
+                            alertify.error("passwords dont match");
                         break;
                     }
                 })
@@ -128,16 +128,16 @@ $(document).ready(function() {
          function(code) {
             switch(code) {
                 case '0':
-                    bootbox.alert("There doesn't seem to be any accounts with that login combination");
+                    alertify.error("There doesn't seem to be any accounts with that login combination");
                 break;
                 case '1':
                     window.location.reload();
                 break;
                 case '4':
-                    bootbox.alert("A field is empty, check them out!");
+                    alertify.error("A field is empty, check them out!");
                 break;
                 case '3':
-                    bootbox.alert("passwords dont match");
+                    alertify.error("passwords dont match");
                 break;
             }
         })

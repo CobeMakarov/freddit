@@ -251,6 +251,9 @@
                     {% else %}
                     <a href="{{ url_for('subscribe', id=sub.id) }}" type="button" class="btn btn-success btn-xs">Subscribe</a>
                     {% endif %}
+                    {% if client.admin or is_owner %}
+                    <a href="{{ url_for('render_sub_settings', id=sub.id) }}" type="button" class="btn btn-warning btn-xs" style="margin-top: 30%;">Settings</a>
+                    {% endif %}
                 </div>
             </div>
             <br />
@@ -266,6 +269,17 @@
                     <a type="button" href="{{ url_for('post', sub=sub.id) }}" class="btn btn-warning btn-sm btn-block">Create Post</a>
                 </div>
                 {% endif %}
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-12">
+                    <b>moderators</b> <br />
+                    {% for mod in sub.moderators %}
+                    <div style="padding-bottom: 3%">
+                        <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

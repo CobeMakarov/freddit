@@ -8,12 +8,10 @@ $('.upvote_post').on('click', function() {
     var el = $(this);
     var post_id = $(this).attr('id');
 
-    console.log("upvote for #" + post_id)
-
     $.post('../vote', {'id': post_id, 'vote': 1, 'is_post': true}, function(code) {
         switch(code) {
             case '-1':
-                bootbox.alert('You have already voted that way on that particular post!');
+                alertify.error('You have already voted that way on that particular post!');
             break;
             case '1':
                 var flip = false; //if we are going from one state to another instead of default to one stage (downvote straight to upvote)
@@ -46,7 +44,7 @@ $('.downvote_post').on('click', function() {
     $.post('../vote', {'id': post_id, 'vote': 0, 'is_post': true}, function(code) {
         switch(code) {
             case '-1':
-                bootbox.alert('You have already voted that way on that particular post!');
+                alertify.error('You have already voted that way on that particular post!');
             break;
             case '1':
                 var flip = false; //if we are going from one state to another instead of default to one stage (downvote straight to upvote)
@@ -168,7 +166,7 @@ $('.upvote_comment').on('click', function() {
     $.post('../vote', {'id': post_id, 'vote': 1, 'is_post': false}, function(code) {
         switch(code) {
             case '-1':
-                bootbox.alert('You have already voted that way on that particular post!');
+                alertify.error('You have already voted that way on that particular post!');
             break;
             case '1':
                 var flip = false; //if we are going from one state to another instead of default to one stage (downvote straight to upvote)
@@ -201,7 +199,7 @@ $('.downvote_comment').on('click', function() {
     $.post('../vote', {'id': post_id, 'vote': 0, 'is_post': false}, function(code) {
         switch(code) {
             case '-1':
-                bootbox.alert('You have already voted that way on that particular post!');
+                alertify.error('You have already voted that way on that particular post!');
             break;
             case '1':
                 var flip = false; //if we are going from one state to another instead of default to one stage (downvote straight to upvote)
@@ -264,10 +262,10 @@ $('.yes_confirmation').on('click', function() {
     $.post(('/' + op), {'id': id}, function(code) {
         switch(code) {
             case '0':
-                bootbox.alert('Something went wrong, try again later!');
+                alertify.error('Something went wrong, try again later!');
                 break;
             case '1':
-                bootbox.alert('You don\'t have the permission to run this operation!');
+                alertify.error('You don\'t have the permission to run this operation!');
                 break;
             case '2':
                 if (!in_post) {

@@ -1,4 +1,6 @@
+from moderator import moderator
 from post import post
+
 
 class subfreddit:
     @staticmethod
@@ -36,13 +38,15 @@ class subfreddit:
 
         for row in rows:
             subs.append(subfreddit(row["id"], db, row["path"], row["title"], row["creator_id"],
-                                   row["description"], row["subscriber_name"]))
+                                   row["description"], row["subscriber_name"], row["header_background"],
+                                   row["header_text"]))
 
         return subs
 
-    def __init__(self, id, db, path=None, title=None, creator=None, desc=None, subscriber_name=None):
+    def __init__(self, id, db, path=None, title=None, creator=None, desc=None, subscriber_name=None, header_background=None, header_text=None):
         self.db = db
         self.moderators = []
+        self.moderators_ids = []
 
         if path is not None and id == 0:
             self.path = path
@@ -61,6 +65,8 @@ class subfreddit:
 
             self.creator_id = row["creator_id"]
             self.subscriber_name = row["subscriber_name"]
+            self.header_background = row["header_background"]
+            self.header_text = row["header_text"]
         else:
             self.id = id
 
@@ -75,6 +81,8 @@ class subfreddit:
 
                 self.creator_id = row["creator_id"]
                 self.subscriber_name = row["subscriber_name"]
+                self.header_background = row["header_background"]
+                self.header_text = row["header_text"]
             else:
                 self.id = id
                 self.path = path
@@ -83,8 +91,16 @@ class subfreddit:
 
                 self.creator_id = creator
                 self.subscriber_name = subscriber_name
+                self.header_background = header_background
+                self.header_text = header_text
 
                 self.db = db
+
+        if self.header_background is None:
+            self.header_background = ""
+
+        if self.header_text is None:
+            self.header_text = ""
 
         self.load_moderators()
 
@@ -130,10 +146,32 @@ class subfreddit:
         return None
 
     def load_moderators(self):
-        self.db.get_cursor().execute("SELECT user_id FROM subfreddits_moderators WHERE subfreddit_id = %s", (self.id, ))
+        self.db.get_cursor().execute("SELECT users.id, users.username FROM users "
+                                     "JOIN subfreddits_moderators ON subfreddits_moderators.user_id = users.id "
+                                     "WHERE subfreddits_moderators.subfreddit_id = %s", (self.id, ))
 
         rows = self.db.get_cursor().fetchall()
 
         for row in rows:
-            if row["user_id"] not in self.moderators:
-                self.moderators.append(row["user_id"])
+            mod = moderator(row["id"], row["username"], self.id, self.db)
+
+            if mod.id not in [s.id for s in self.moderators]:
+                self.moderators.append(mod)
+                self.moderators_ids.append(mod.id)
+
+    def add_moderator(self, mod):
+        if mod.id not in [s.id for s in self.moderators]:
+            self.db.get_cursor().execute("INSERT INTO subfreddits_moderators (subfreddit_id, user_id) VALUES (%s, %s)", (self.id, mod.id))
+            self.db.commit()
+
+            self.moderators.append(mod)
+            self.moderators_ids.append(mod.id)
+
+    def remove_moderator(self, id):
+        self.db.get_cursor().execute("DELETE FROM subfreddits_moderators WHERE subfreddit_id = %s AND user_id = %s", (self.id, id))
+        self.db.commit()
+
+    def save(self):
+        self.db.get_cursor().execute("UPDATE subfreddits SET title = %s, description = %s, header_background = %s, header_text = %s WHERE id = %s",
+                                    (self.title, self.desc, self.header_background, self.header_text, self.id))
+        self.db.commit()

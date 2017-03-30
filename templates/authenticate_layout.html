@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" style="background:url('../static/images/f0f0a5fafb5046c4946b35b3ab946341.jpeg') no-repeat center center; min-height:100%; background-size:cover;">
-<head>
-    <meta charset="UTF-8">
-    <title>Freddit: Home</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Freddit: Home</title>
 
-    <link rel="stylesheet" href="static/styles/light-bootstrap.css">
-</head>
-<body style="min-height:100%; background: none;">
-    <div class="container">
-        <div class="row" style="margin-top:6%">
-            <div class="col-md-4">
-                <div class="text-center">
-                    <h1 id="mainText" style="display:none; color:white;">Freddit.. <i>or Fred for short..</i></h1>
-                    <h2 id="subText" style="display:none; color:white;">A reddit clone.</h2>
+        <link rel="stylesheet" href="static/styles/light-bootstrap.css">
+    </head>
+    <body style="min-height:100%; background: none;">
+        <div class="container">
+            <div class="row" style="margin-top:6%">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <h1 id="mainText" style="display:none; color:white;">Freddit.. <i>or Fred for short..</i></h1>
+                        <h2 id="subText" style="display:none; color:white;">A reddit clone.</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="content">
-                    {%block content %}{% endblock %}
+                <div class="col-md-4">
+                    <div class="content">
+                        {%block content %}{% endblock %}
+                    </div>
                 </div>
+                <div class="col-md-4"></div>
             </div>
-            <div class="col-md-4"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="navbar-brand">&copy 2017 Shacobe Johnson | UMW</div>
+                </div>
+              </div>
+            </nav>
         </div>
-        <nav class="navbar navbar-default navbar-fixed-bottom">
-          <div class="container-fluid">
-            <div class="navbar-header">
-                <div class="navbar-brand">&copy 2017 Shacobe Johnson | UMW</div>
-            </div>
-          </div>
-        </nav>
-    </div>
-</body>
+    </body>
     <script src="static/scripts/jquery.js"></script>
     <script src="static/scripts/bootstrap.js"></script>
-    <script src="static/scripts/bootbox.min.js"></script>
+
+    <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
 
     <script src="static/scripts/authenticate.js"></script>
 </html>

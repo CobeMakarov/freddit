@@ -51,22 +51,29 @@ class user:
         #ok so we need to get the sum of posts.vote_count + the sum of comments.vote_count and combine them using joins
         return calculation
 
-    def __init__(self, id, db):
+    def __init__(self, id, db, username=None, email=None, night=None, admin=None):
         self.db = db
 
         self.subfreddits = []
 
-        self.db.get_cursor().execute("SELECT * FROM users WHERE id = %s", (id,))
-
-        row = self.db.get_cursor().fetchone()
-
         self.id = id
 
-        self.username = row["username"]
-        self.email = row["email"]
-        self.night = (row["night_mode"] == 1)
+        if username is None:
+            self.db.get_cursor().execute("SELECT * FROM users WHERE id = %s", (id,))
 
-        self.admin = (row["admin"] == 1)
+            row = self.db.get_cursor().fetchone()
+
+            self.username = row["username"]
+            self.email = row["email"]
+            self.night = (row["night_mode"] == 1)
+
+            self.admin = (row["admin"] == 1)
+        else:
+            self.username = username
+            self.email = email
+            self.night = night
+
+            self.admin = admin
 
         self.subfreddits = []
 
@@ -230,7 +237,7 @@ class user:
         moderated = []
 
         for sub in self.subfreddits:
-            if self.id in sub.moderators:
+            if self.id in sub.moderators_ids:
                 moderated.append(sub)
 
         return moderated

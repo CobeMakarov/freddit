@@ -10,6 +10,7 @@ from chat import chat
 from comment import comment as cmt_obj
 from database import database
 from misc import misc
+from moderator import moderator
 from post import post as post_obj
 from search import search as search_for
 from subfreddit import subfreddit
@@ -187,6 +188,26 @@ def render_sub_sort(name=None, sort=None):
                                    sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
                                    is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
 
+@app.route('/fr/settings/<id>')
+def render_sub_settings(id=None):
+    if id is None:
+        return None
+
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    sub = subfreddit(id, db)
+
+    if sub is not None:
+        return render_template('subfreddit_settings.html', client=client, subfreddits=client.subfreddits,
+                               sub=sub, page_title='Subfreddit Settings for ' + sub.title,
+                               is_owner=sub.is_owner(client.id), misc=misc)
+
+
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
     if id is None:
@@ -230,6 +251,50 @@ def unsubscribe(id=None):
                            client=client, posts=sub.get_posts("hot"), subfreddits=client.subfreddits,
                            sub=sub, ago=timeago, date=datetime, is_mod=client.is_mod(sub.id), page_title=sub.title,
                            is_owner=sub.is_owner(client.id), sticky=sub.get_sticky_post(), misc=misc)
+
+@app.route('/fr/save', methods=['POST'])
+def subfreddit_save():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        if not request.form['title']:
+            return '0'
+
+        title = request.form['title']
+        desc = request.form['desc']
+        header = request.form['header']
+        header_text = request.form['header_text']
+
+        sub_id = request.form["sub_id"]
+        sub = subfreddit(sub_id, db)
+
+        if (title != sub.title and len(title) > 3) or \
+            desc != sub.desc or \
+            header != sub.header_background or \
+            header_text != sub.header_text:  #there's some sort of change so lets save
+
+            sub.title = title
+
+            if desc != sub.desc:
+                sub.desc = desc
+
+            if header != sub.header_background:
+                if header_text != sub.header_text and len(header) >= 3 and header == header_text:
+                    return '3'
+
+                sub.header_background = header
+
+            if header_text != sub.header_text:
+                sub.header_text = header_text
+
+            sub.save()
+            return '1'
+        return '2'
 
 @app.route('/p/<id>')
 def render_post(id=None):
@@ -298,7 +363,6 @@ def render_user(name=None):
 
     return render_template('profile.html', client=client, subfreddits=client.subfreddits, page_title=profiled.username,
                            profile=profiled, ago=timeago, date=datetime)
-
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
@@ -578,6 +642,57 @@ def flush():
     if request.method == "POST" and client.admin:
         client.flush()
     return 'flush'
+
+# settings post actions
+
+@app.route('/add_mod', methods=['POST'])
+def add_mod():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        mods = request.form["mods"].replace(" ", "").split(',')
+        sub_id = request.form["sub_id"]
+        sub = subfreddit(sub_id, db)
+
+        mod_html = ""
+
+        if sub.is_owner(client.id):
+            for mod in mods:
+                obj = moderator(user.get_id_by_username(mod, db), mod, sub_id, db)
+
+                sub.add_moderator(obj)
+
+                mod_html += obj.html()
+
+            return mod_html
+
+
+@app.route('/remove_mod', methods=['POST'])
+def remove_mod():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        mod = request.form["mod"]
+        sub_id = request.form["sub_id"]
+
+        sub = subfreddit(sub_id, db)
+
+        if sub.is_owner(client.id):
+            sub.remove_moderator(mod)
+            return '1'
+
+    return '0'
+
 # socket actions
 
 @socketio.on('connect')

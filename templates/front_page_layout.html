@@ -10,6 +10,32 @@
         <link rel="stylesheet" id="page-theme" href="{{ url_for('static', filename='styles/light-bootstrap.css') }}">
         {% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap-extra.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/jquery-ui.css') }}">
+
+        {% if sub is defined and sub.header_text|length > 4 %}
+        <style>
+            .navbar-default .navbar-nav > li > a {
+                color: {{ sub.header_text }};
+            }
+
+            .navbar-default .navbar-brand {
+                color: {{ sub.header_text }};
+            }
+            {% if sub.header_background|length > 4 %}
+                .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus {
+                    color: {{ sub.header_text }};
+                    background-color: {{ sub.header_background }};
+                }
+            {% endif %}
+        </style>
+        {% endif %}
+        {% if sub is defined and sub.header_text|length > 4 %}
+        <style>
+            div.navbar.navbar-default.navbar-fixed-top {
+                background-color: {{ sub.header_background }};
+            }
+        </style>
+        {% endif %}
     </head>
     <body style="padding-top: 6%;">
         <div class="navbar navbar-default navbar-fixed-top">
@@ -27,8 +53,8 @@
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        {% for sub in subfreddits %}
-                        <li><a href="/fr/{{sub.path}}">{{sub.path}}</a></li>
+                        {% for header_sub in subfreddits %}
+                        <li><a href="/fr/{{ header_sub.path }}">{{ header_sub.path }}</a></li>
                         {% endfor %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
@@ -71,11 +97,13 @@
         </div>
     </body>
     <script src="{{ url_for('static', filename='scripts/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/jquery-ui.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/bootstrap.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/bootbox.min.js') }}"></script>
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.4/socket.io.js"></script>
+    <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
 
     <script src="{{ url_for('static', filename='scripts/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/subfreddit.js') }}"></script>
