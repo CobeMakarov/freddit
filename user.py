@@ -78,6 +78,7 @@ class user:
         self.subfreddits = []
 
         self.load_subs()
+        self.load_flairs()
         self.karma = self.calculate_karma()
 
     def load_subs(self):
@@ -92,6 +93,16 @@ class user:
 
             if sub.id not in [s.id for s in self.subfreddits]:
                 self.subfreddits.append(sub)
+
+    def load_flairs(self):
+        self.db.get_cursor().execute("SELECT subfreddit_flairs.* FROM subfreddit_flairs "
+                                     "JOIN user_flairs ON user_flairs.flair_id = subfreddit_flairs.id "
+                                     "WHERE user_flairs.user_id = %s",
+                                     (self.id, ))
+        flairs = self.db.get_cursor().fetchall()
+
+        for fl in flairs:
+            self.flairs.append(flair(fl["id"], fl["text"], fl["label_type"], fl["subfreddit_id"]))
 
     def calculate_karma(self):
         self.db.get_cursor().execute("SELECT sum(vote_count) FROM "
@@ -275,6 +286,11 @@ class user:
 
     def is_subscribed(self, sub_id):
         return sub_id in [sub.id for sub in self.subfreddits]
+
+    def get_flair(self, sub_id):
+        flair = next((x for x in self.flairs if x.subfreddit == sub_id), None)
+
+        return flair
 
     def post(self, sub_id, title, type, text, media):
         self.db.get_cursor().execute("INSERT INTO posts (title, subfreddit, type, post_text, media_url, user_id) "

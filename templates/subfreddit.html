@@ -96,6 +96,18 @@
                                         <button class="btn btn-link no_confirmation" id="{{ sticky.id }}" style="padding: 0;">no</button>
                                     </div>
                                 </div>
+                                {% elif sticky.user_id == client.id %}
+                                <div class="pull-right">
+                                    <div class="post_actions">
+                                        <button class="btn btn-link edit_post" id="{{ sticky.id }}" style="padding: 0;">Edit</button>
+                                        <button class="btn btn-link delete_post" id="{{ sticky.id }}" style="padding: 0;">Delete</button>
+                                    </div>
+                                    <div class="action_confirmation" operation="" id="{{ sticky.id }}" in_post="false" style="display: none;">
+                                        are you sure?
+                                        <button class="btn btn-link yes_confirmation" id="{{ sticky.id }}" style="padding: 0;">yes</button> /
+                                        <button class="btn btn-link no_confirmation" id="{{ sticky.id }}" style="padding: 0;">no</button>
+                                    </div>
+                                </div>
                                 {% endif %}
                             </div>
                         </div>

@@ -61,8 +61,12 @@ $(document).ready(function() {
                 break;
                 case '2':
                     alertify.log("No changes detected, save skipped.");
+                break;
                 case '3':
                     alertify.error("Your header background and header text colors cannot be the same!");
+                break;
+                case '4':
+                    alertify.error("That is not a valid hex code!");
             }
         })
     })

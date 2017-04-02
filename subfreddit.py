@@ -1,6 +1,6 @@
-from moderator import moderator
 from post import post
-
+from flair import flair
+from moderator import moderator
 
 class subfreddit:
     @staticmethod
@@ -45,6 +45,8 @@ class subfreddit:
 
     def __init__(self, id, db, path=None, title=None, creator=None, desc=None, subscriber_name=None, header_background=None, header_text=None):
         self.db = db
+
+        self.flairs = []
         self.moderators = []
         self.moderators_ids = []
 
@@ -102,6 +104,7 @@ class subfreddit:
         if self.header_text is None:
             self.header_text = ""
 
+        self.load_flairs()
         self.load_moderators()
 
     def get_posts(self, sort):
@@ -145,6 +148,14 @@ class subfreddit:
 
         return None
 
+    def load_flairs(self):
+        self.db.get_cursor().execute("SELECT * FROM subfreddit_flairs WHERE subfreddit_id = %s", (self.id, ))
+
+        flairs = self.db.get_cursor().fetchall()
+
+        for fl in flairs:
+            self.flairs.append(flair(fl["id"], fl["text"], fl["label_type"], self.id))
+
     def load_moderators(self):
         self.db.get_cursor().execute("SELECT users.id, users.username FROM users "
                                      "JOIN subfreddits_moderators ON subfreddits_moderators.user_id = users.id "
@@ -171,7 +182,26 @@ class subfreddit:
         self.db.get_cursor().execute("DELETE FROM subfreddits_moderators WHERE subfreddit_id = %s AND user_id = %s", (self.id, id))
         self.db.commit()
 
+    def add_flair(self, text, label):
+        for fl in self.flairs:
+            if fl.text == text and fl.label == label:
+                return
+
+        self.db.get_cursor().execute("INSERT INTO subfreddit_flairs (subfreddit_id, label_type, text) VALUES (%s, %s, %s) RETURNING id",
+                                     (self.id, label, text))
+
+        generated = self.db.get_cursor().fetchone()[0]
+
+        self.flairs.append(flair(generated, text, label, self.id))
+
+    def remove_flair(self, id):
+        self.db.get_cursor().execute("DELETE FROM subfreddit_flairs WHERE id = %s", (id, ))
+        self.db.get_cursor().execute("DELETE FROM user_flairs WHERE flair_id = %s", (id, ))
+
+        self.db.commit()
+
     def save(self):
         self.db.get_cursor().execute("UPDATE subfreddits SET title = %s, description = %s, header_background = %s, header_text = %s WHERE id = %s",
-                                    (self.title, self.desc, self.header_background, self.header_text, self.id))
+                                     (self.title, self.desc, self.header_background, self.header_text, self.id))
         self.db.commit()
+

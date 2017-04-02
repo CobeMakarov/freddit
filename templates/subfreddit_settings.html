@@ -42,7 +42,7 @@
                     <label class="col-lg-3 control-label">Header Background</label>
                     <div class="col-lg-8">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="new_sub_header" sub_id="{{ sub.id }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
+                            <input type="text" class="form-control" id="new_sub_header" sub_id="{{ sub.id }}" value="{{ sub.header_background }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" id="test_header_color" data-toggle="tooltip" data-placement="top" title="click to test color">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
                             </span>
@@ -53,7 +53,7 @@
                     <label class="col-lg-3 control-label">Header Text Color</label>
                     <div class="col-lg-8">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="new_sub_header_text" sub_id="{{ sub.id }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
+                            <input type="text" class="form-control" id="new_sub_header_text" sub_id="{{ sub.id }}" value="{{ sub.header_text }}" placeholder="html hex code. e,g #000 for black. leave blank for default">
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" id="test_text_color" data-toggle="tooltip" data-placement="top" title="click to test color">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
                             </span>
@@ -85,6 +85,7 @@
                         </div>
                     </div>
                 </div>
+                <hr />
             </form>
         </div>
     </div>
