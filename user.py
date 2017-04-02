@@ -321,5 +321,13 @@ class user:
         self.load_subs()
         self.karma = self.calculate_karma()
 
-
+    def get_user_votes_comments(self):
+        self.db.get_cursor().execute("Select sum(vote) from user_votes_comments where user_id = %s", (self.id, ))
+        comments_votes_sum = self.db.get_cursor().fetchone()[0]
+        return comments_votes_sum
+        
+    def get_user_votes_posts(self):
+        self.db.get_cursor().execute("Select sum(vote) from user_votes_posts where user_id = %s", (self.id, ))
+        posts_votes_sum = self.db.get_cursor().fetchone()[0]
+        return posts_votes_sum
 

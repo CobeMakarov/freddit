@@ -141,8 +141,8 @@
                     {% endif %}
                 </div>
                 <div class="col-md-6">
-                    <h5><b>5</b> comment karma</h5>
-                    <h5><b>5</b> submission karma</h5>
+                    <h5><b>{{ profile.get_user_votes_comments() }}</b> comment karma</h5>
+                    <h5><b>{{ profile.get_user_votes_posts() }}</b> submission karma</h5>
                 </div>
                 <div class="col-md-12">
                     <b>moderated subs</b> <br />
