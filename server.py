@@ -693,6 +693,73 @@ def remove_mod():
 
     return '0'
 
+@app.route('/add_flair', methods=['POST'])
+def add_flair():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        text = request.form["text"]
+        label = request.form["label"]
+        sub_id = request.form["sub_id"]
+
+        sub = subfreddit(sub_id, db)
+
+        if sub.is_owner(client.id):
+
+            if len(text) <= 15:
+                result = sub.add_flair(text, label)
+            else:
+                return '2'
+
+            if not result:
+                return '1'
+            else:
+                return result.html()
+
+@app.route('/remove_flair', methods=['POST'])
+def remove_flair():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        id = request.form["id"]
+        sub_id = request.form["sub_id"]
+
+        sub = subfreddit(sub_id, db)
+
+        if sub.is_owner(client.id):
+            sub.remove_flair(id)
+
+            return '1'
+
+    return '0'
+
+@app.route('/set_flair', methods=['POST'])
+def set_flair():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        id = request.form["id"]
+        sub_id = request.form["sub_id"]
+
+        client.set_flair(sub_id, id)
+        return '1'
+    return '0'
+
 # socket actions
 
 @socketio.on('connect')

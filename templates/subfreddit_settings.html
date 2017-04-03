@@ -77,15 +77,48 @@
                             </div>
                             {% endfor %}
                         </div>
+                        <hr>
                         <div class="input-group">
                             <input type="text" class="form-control" id="new_sub_mods" sub_id="{{ sub.id }}" placeholder="add moderator (divide multiple people with ',') ">
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-success" id="add_mods">Add</button>
+                                <button type="button" class="btn btn-success" id="add_mods">Add Moderator</button>
                             </span>
                         </div>
                     </div>
                 </div>
-                <hr />
+                <hr>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Flairs</label>
+                    <div class="col-lg-8" style="padding-top: 1.3%;">
+                        <div id="flair-container">
+                            {% for flair in sub.flairs %}
+                            <div style="padding-bottom: 3%">
+                                <div class="label {{ flair.label }}">{{ flair.text }}</div> &nbsp;
+                                <button type="button" class="btn btn-link remove_flair" id="{{ flair.id }}" sub_id="{{ sub.id }}" style="padding: 0;">remove</button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
+                        <div class="col-md-6 pull-right">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="new_sub_flair_text" placeholder="text for flair" style="margin-bottom: 15px;">
+                                <select class="form-control" id="new_sub_flair_label" style="margin-bottom: 15px;">
+                                    <option value="label-default">black</option>
+                                    <option value="label-white">white</option>
+                                    <option value="label-primary">dark blue</option>
+                                    <option value="label-success">green</option>
+                                    <option value="label-info">light blue</option>
+                                    <option value="label-warning">orange</option>
+                                    <option value="label-danger">red</option>
+                                    <option value="label-yellow">yellow</option>
+                                    <option value="label-purple">purple</option>
+                                </select>
+
+                                <button type="button" class="btn btn-success" id="add_flair" sub_id="{{ sub.id }}">Add Flair</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

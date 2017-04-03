@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from comment import comment
+from flair import flair
 from misc import misc
 from post import post
 from subfreddit import subfreddit
@@ -54,6 +55,7 @@ class user:
     def __init__(self, id, db, username=None, email=None, night=None, admin=None):
         self.db = db
 
+        self.flairs = []
         self.subfreddits = []
 
         self.id = id
@@ -292,6 +294,15 @@ class user:
 
         return flair
 
+    def set_flair(self, sub_id, flair_id):
+        self.db.get_cursor().execute("DELETE FROM user_flairs WHERE user_id = %s AND subfreddit_id = %s",
+                                     (self.id, sub_id))
+
+        self.db.get_cursor().execute("INSERT INTO user_flairs (user_id, subfreddit_id, flair_id) VALUES (%s, %s, %s)",
+                                     (self.id, sub_id, flair_id))
+
+        self.db.commit()
+
     def post(self, sub_id, title, type, text, media):
         self.db.get_cursor().execute("INSERT INTO posts (title, subfreddit, type, post_text, media_url, user_id) "
                                      "VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
@@ -339,11 +350,15 @@ class user:
 
     def get_comments_karma(self):
         self.db.get_cursor().execute("Select sum(vote_count) from comments where user_id = %s", (self.id, ))
+
         comments_votes_sum = self.db.get_cursor().fetchone()[0]
+
         return comments_votes_sum
         
     def get_posts_karma(self):
         self.db.get_cursor().execute("Select sum(vote_count) from posts where user_id = %s", (self.id, ))
+
         posts_votes_sum = self.db.get_cursor().fetchone()[0]
+
         return posts_votes_sum
 

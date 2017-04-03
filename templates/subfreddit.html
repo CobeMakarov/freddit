@@ -284,6 +284,30 @@
             </div>
             <br />
             <div class="row">
+                {% if client.is_subscribed(sub.id) %}
+                <div class="col-md-12">
+                    <b>flair information</b> <br />
+                    {% if client.get_flair(sub.id) is not none %}
+                        <div style="padding-bottom: 5%;">
+                            {{ client.username }} {{ client.get_flair(sub.id).simple_html()|safe }}
+                        </div>
+                    {% endif %}
+                    <select id="set-flair" class="form-control-xs" style="display: inline-block;">
+                        {% for flair in sub.flairs %}
+                            <option value="{{ flair.id }}" flair-label="{{ flair.label }}" flair-text="{{ flair.text }}" flair-sub="{{ flair.subfreddit }}">
+                                {{ flair.text }} &nbsp;
+                            </option>
+                        {% endfor %}
+                    </select> &nbsp;
+
+                    <span id="flair-preview"></span> &nbsp;
+                    <button type="button" class="btn btn-xs btn-info" id="flair-save">save</button>
+                </div>
+                <div class="col-md-4"></div>
+                {% endif %}
+            </div>
+            <br />
+            <div class="row">
                 <div class="col-md-12">
                     <b>moderators</b> <br />
                     {% for mod in sub.moderators %}

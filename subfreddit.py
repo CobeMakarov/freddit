@@ -1,6 +1,7 @@
-from post import post
 from flair import flair
+from misc import misc
 from moderator import moderator
+from post import post
 
 class subfreddit:
     @staticmethod
@@ -182,23 +183,35 @@ class subfreddit:
         self.db.get_cursor().execute("DELETE FROM subfreddits_moderators WHERE subfreddit_id = %s AND user_id = %s", (self.id, id))
         self.db.commit()
 
+        misc.remove_by_key("id", id, self.moderators)
+
+        self.moderators_ids.remove(id)
+
     def add_flair(self, text, label):
         for fl in self.flairs:
             if fl.text == text and fl.label == label:
-                return
+                return False
 
         self.db.get_cursor().execute("INSERT INTO subfreddit_flairs (subfreddit_id, label_type, text) VALUES (%s, %s, %s) RETURNING id",
                                      (self.id, label, text))
 
         generated = self.db.get_cursor().fetchone()[0]
 
-        self.flairs.append(flair(generated, text, label, self.id))
+        self.db.commit()
+
+        result = flair(generated, text, label, self.id)
+
+        self.flairs.append(result)
+
+        return result
 
     def remove_flair(self, id):
-        self.db.get_cursor().execute("DELETE FROM subfreddit_flairs WHERE id = %s", (id, ))
         self.db.get_cursor().execute("DELETE FROM user_flairs WHERE flair_id = %s", (id, ))
+        self.db.get_cursor().execute("DELETE FROM subfreddit_flairs WHERE id = %s", (id, ))
 
         self.db.commit()
+
+        misc.remove_by_key("id", id, self.flairs)
 
     def save(self):
         self.db.get_cursor().execute("UPDATE subfreddits SET title = %s, description = %s, header_background = %s, header_text = %s WHERE id = %s",

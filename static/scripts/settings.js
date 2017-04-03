@@ -85,12 +85,54 @@ $(document).ready(function() {
                     break;
                 }
             })
+        } else {
+            alertify.error("Please fill out a user's name in the add mod field!");
+        }
+    })
+
+    $('#add_flair').on('click', function() {
+        if($('#new_sub_flair_text').val().length >= 2) { //min size for a flair
+            $.post('/add_flair', {
+                'text': $('#new_sub_flair_text').val(),
+                'label': $('#new_sub_flair_label').val(),
+                'sub_id': $(this).attr('sub_id')}, function(code) {
+                switch(code) {
+                    case '0':
+                    break;
+                    case '1':
+                        alertify.error("A flair similar has already been added!");
+                    break;
+                    default:
+                        $('#flair-container').fadeOut(750, function() {
+                            $(this).append(code);
+                            $(this).fadeIn(750);
+                        });
+                    break;
+                }
+            })
+        } else {
+            alertify.error("Please fill out the flair text field!");
         }
     })
 
     $('.remove_mod').on('click', function() {
         var parent = $(this).parent()
         $.post('/remove_mod', {'mod': $(this).attr('user_id'), 'sub_id': $(this).attr('sub_id')}, function(code) {
+            switch(code) {
+                case '0':
+                break;
+                default:
+                    parent.fadeOut(750, function() {
+                        parent.remove();
+                    })
+                break;
+            }
+        })
+    })
+
+    $('.remove_flair').on('click', function() {
+        var parent = $(this).parent();
+        $.post('/remove_flair', {'id': $(this).attr('id'), 'sub_id': $(this).attr('sub_id')}, function(code) {
             switch(code) {
                 case '0':
                 break;

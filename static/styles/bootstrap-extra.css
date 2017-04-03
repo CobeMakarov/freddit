@@ -1,3 +1,21 @@
 input[type="text"] {
     box-sizing: border-box;
 }
+
+.label-yellow {
+    background-color: #f5e625;
+}
+
+.label-purple {
+    background-color: #6c006c;
+}
+
+.label-none {
+    background-color: none;
+    color: #222;
+}
+
+.label-white {
+    background-color: #fffffe;
+    color: #222;
+}

@@ -1,3 +1,20 @@
+$(document).ready(function() {
+    var option = $('#set-flair').find('option:selected');
+
+    var text = option.attr('flair-text');
+    var label = option.attr('flair-label');
+
+    $('#flair-preview').fadeOut(750, function() {
+        $(this).removeClass();
+
+        $(this).addClass('label');
+        $(this).addClass(label);
+        $(this).html(text);
+
+        $(this).fadeIn(750);
+    })
+})
+
 $('.post-expand').on('click', function() {
     var el = $(this).parent().parent().find('.post-extra');
 
@@ -305,5 +322,35 @@ $('.no_confirmation').on('click', function() {
 
     parent.find('.action_confirmation').fadeOut(750, function() {
         parent.find('.post_actions').fadeIn(750);
+    })
+})
+
+$('#set-flair').on('change', function() {
+    var option = $(this).find('option:selected');
+
+    var text = option.attr('flair-text');
+    var label = option.attr('flair-label');
+
+    $('#flair-preview').fadeOut(750, function() {
+        $(this).removeClass();
+
+        $(this).addClass('label');
+        $(this).addClass(label);
+        $(this).html(text);
+
+        $(this).fadeIn(750);
+    })
+})
+
+$('#flair-save').on('click', function() {
+    var flair_id = $('#set-flair').find('option:selected').val();
+    var sub_id = $('#set-flair').find('option:selected').attr('flair-sub');
+
+    $.post('/set_flair', {'id': flair_id, 'sub_id': sub_id}, function(code) {
+        switch(code) {
+            default:
+                alertify.success("Your flair has been saved!");
+            break;
+        }
     })
 })
