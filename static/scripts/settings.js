@@ -130,8 +130,9 @@ $(document).ready(function() {
         })
     })
 
-    $('.remove_flair').on('click', function() {
+    $(document).on('click', '.remove_flair', function() {
         var parent = $(this).parent();
+
         $.post('/remove_flair', {'id': $(this).attr('id'), 'sub_id': $(this).attr('sub_id')}, function(code) {
             switch(code) {
                 case '0':
