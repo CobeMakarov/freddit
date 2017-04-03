@@ -68,7 +68,7 @@
                                 </div>
                                 <div class="col-md-12">
                                    <b class="text-warning">
-                                       <i>{{  ago.format(sticky.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=sticky.get_user_name()) }}">{{ sticky.get_user_name() }}</a> in <a href="#">/fr/{{ sticky.get_subfreddit_path() }}</a>
+                                       <i>{{  ago.format(sticky.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=sticky.get_user_name()) }}">{{ sticky.get_user_name() }}</a>{% if client.get_flair(sub.id) is not none %} &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }} {% endif %} in <a href="#">/fr/{{ sticky.get_subfreddit_path() }}</a>
                                    </b>
                                 </div>
                                 <div class="col-md-12 post-extra" style="padding-top:4%;">
@@ -169,7 +169,7 @@
                                     {{ post.title }}
                                 </div>
                                 <div class="col-md-12">
-                                   <i>{{  ago.format(post.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=post.get_user_name()) }}">{{ post.get_user_name() }}</a> in <a href="#">/fr/{{ post.get_subfreddit_path() }}</a>
+                                   <i>{{  ago.format(post.date_posted, date.datetime.now()) }}</i> by <a href="{{ url_for('render_user', name=post.get_user_name()) }}">{{ post.get_user_name() }}</a>{% if client.get_flair(sub.id) is not none %} &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }} {% endif %} in <a href="#">/fr/{{ post.get_subfreddit_path() }}</a>
                                 </div>
                                 <div class="col-md-12 post-extra" style="display: none; padding-top:4%;">
                                     {% if post.type == 0 %}
@@ -312,7 +312,11 @@
                     <b>moderators</b> <br />
                     {% for mod in sub.moderators %}
                     <div style="padding-bottom: 3%">
+                        {% if client.get_flair(sub.id) is not none %}
+                        <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a> &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }}
+                        {% else %}
                         <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>

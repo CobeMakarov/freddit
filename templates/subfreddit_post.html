@@ -47,7 +47,11 @@
                     <div class="panel {{ desired_panel }}">
                         <div class="panel-heading">
                             <h3 class="panel-title">
+                                {% if client.get_flair(sub.id) is not none %}
+                                <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a> &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }}
+                                {% else %}
                                 <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a>
+                                {% endif %}
                                 {% if comment.vote_count > 0 %}
                                 <span class="label label-success inline-block">{{ comment.vote_count }}</span>
                                 {% elif comment.vote_count < 0 %}
@@ -291,7 +295,11 @@
                     <b>moderators</b> <br />
                     {% for mod in sub.moderators %}
                     <div style="padding-bottom: 3%">
+                        {% if client.get_flair(sub.id) is not none %}
+                        <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a> &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }}
+                        {% else %}
                         <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
