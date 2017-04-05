@@ -238,8 +238,8 @@ class user:
         comments = self.db.get_cursor().fetchall()
 
         if self.db.get_cursor().rowcount > 0:
-            for comment in comments:
-                statistics_draft[comment["subfreddit"]] += 1
+            for cmt in comments:
+                statistics_draft[cmt["subfreddit"]] += 1
 
         # iterate through stat draft and place them into the proper stat dictionary
         for sub_id in statistics_draft.iterkeys():
