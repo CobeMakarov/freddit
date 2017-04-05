@@ -227,8 +227,9 @@ class user:
 
         posts = self.db.get_cursor().fetchall()
 
-        for post in posts:
-            statistics_draft[post["subfreddit"]] += 1
+        if self.db.get_cursor().rowcount > 0:
+            for post in posts:
+                statistics_draft[post["subfreddit"]] += 1
 
         # gather comment stats
         self.db.get_cursor().execute("SELECT comments.id, subfreddit FROM posts JOIN comments ON comments.post_id = posts.id WHERE comments.user_id = %s",
@@ -236,8 +237,9 @@ class user:
 
         comments = self.db.get_cursor().fetchall()
 
-        for comment in comments:
-            statistics_draft[comment["subfreddit"]] += 1
+        if self.db.get_cursor().rowcount > 0:
+            for comment in comments:
+                statistics_draft[comment["subfreddit"]] += 1
 
         # iterate through stat draft and place them into the proper stat dictionary
         for sub_id in statistics_draft.iterkeys():
