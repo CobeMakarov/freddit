@@ -159,6 +159,33 @@ $('.submit_post_response').on('click', function() {
     })
 })
 
+$('.edit_post').on('click', function() {
+    var post_id = $(this).attr('id');
+
+    if($('.post_edit_form[id=' + post_id + ']').is(':hidden')) {
+        $('.post_edit_form[id=' + post_id + ']').slideToggle(750);
+    }
+})
+
+$('.submit_post_edit').on('click', function() {
+    $.post('../edit', {
+        'id': $(this).attr('id'),
+        'text': $('.post_edit_text').val()}, function(code) {
+
+        switch(code) {
+            case '0':
+                alertify.error("You can only modify text posts!");
+            break;
+            case '1':
+                alertify.error("You do not have the permissions to modify this post!");
+            break;
+            default:
+                alertify.success("Post modified successfully!");
+            break;
+        }
+    })
+})
+
 $('.submit_response').on('click', function() {
     console.log("submitting for id=" + $('.post_id').attr('id') + ", parent=" + $(this).attr('id') + ", text=" + $('.response_text[id=' + $(this).attr('id') + ']').val())
     $.post('../comment', {

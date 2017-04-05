@@ -10,7 +10,6 @@ search_app.controller('SearchController', function($scope) {
     $scope.search_results = []
 
     socket.on('refresh_results', function(results) {
-        setTimeout(function() {
             $('#search_query').val("");
             $('#subfreddit_search').val("");
 
@@ -18,7 +17,6 @@ search_app.controller('SearchController', function($scope) {
                 $scope.search_results = results;
                 $scope.$apply();
             });
-        }, 2000)
     })
 
     $('#search_query').on('keyup', function() {

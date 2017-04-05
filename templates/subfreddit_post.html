@@ -161,9 +161,9 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         {% if post.is_sticky == 0 %}
-                        {{ post.title }}
+                        {{ post.title }} by <a href="{{ url_for('render_user', name=post.get_user_name()) }}">{{ post.get_user_name() }}</a>
                         {% else %}
-                        <b>{{ post.title }}</b>
+                        <b>{{ post.title }}</b> by <a href="{{ url_for('render_user', name=post.get_user_name()) }}">{{ post.get_user_name() }}</a>
                         {% endif %}
                         <div class="pull-right">
                             <i>{{ ago.format(post.date_posted, date.datetime.now()) }}</i>
@@ -195,6 +195,15 @@
                         </div>
                         <div class="clearfix"></div>
                     </div>
+
+                    <div class="form-group post_edit_form" id="{{ post.id }}" style="display:none;">
+                        <textarea class="form-control post_edit_text" rows="3" id="{{ post.id }}">{{ post.post_text }} </textarea>
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-link submit_post_edit" id="{{ post.id }}">Submit Edit</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
                     {% if is_mod %}
                         <div class="pull-right">
                             <button class="btn btn-link edit_post" id="{{ post.id }}" style="padding: 0;">Edit</button>

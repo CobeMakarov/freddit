@@ -73,16 +73,16 @@ def authenticate():
             if db.get_cursor().rowcount < 1:
                 return '0'
 
-            userId = row[0]
-            correctPassword = row[1]
+            id = row[0]
+            correct_password = row[1]
 
-            if check_password_hash(correctPassword, password):
-                session['user_id'] = userId
+            if check_password_hash(correct_password, password):
+                session['user_id'] = id
                 session['authenticated'] = True
 
-                client = user(userId, db)
+                client = user(id, db)
 
-                print("[Site Log] user #" + str(userId) + " - " + client.username + " has successfully authenticated.")
+                print("[Site Log] user #" + str(id) + " - " + client.username + " has successfully authenticated.")
                 return '1'  # user successfully logged in
             else:
                 return '3'  # no account with those credentials found
@@ -498,7 +498,36 @@ def post():
                                page_title="Freddit: Create Post")
         #client.post(sub, "This is my first post!", 0, "This is the post content of my first post!")
 
-@app.route('/comment', methods=['GET', 'POST'])
+@app.route('/edit', methods=['POST'])
+def edit():
+    if not session.get('authenticated'):
+        return redirect(url_for('frontpage'))
+
+    db.connect()
+
+    client = user(session['user_id'], db)
+
+    if request.method == "POST":
+        id = request.form["id"]
+        text = request.form["text"]
+
+        p = post_obj(id, db)
+
+        if p.user_id == client.id or client.is_mod(p.subfreddit) or client.admin:
+            if p.media_url is not None:
+                return '0'
+
+            if text == p.post_text:
+                return '2'
+
+            p.post_text = text
+
+            p.update()
+            return '-1'
+        else:
+            return '1'
+
+@app.route('/comment', methods=['POST'])
 def comment():
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -519,7 +548,7 @@ def comment():
 
         return str(post_id)
 
-@app.route('/vote', methods=['GET', 'POST'])
+@app.route('/vote', methods=['POST'])
 def vote():
     if not session.get('authenticated'):
         return redirect(url_for('frontpage'))
@@ -558,7 +587,7 @@ def vote():
 
         return '1'
 
-@app.route('/sticky', methods=['GET', 'POST'])
+@app.route('/sticky', methods=['POST'])
 def sticky():
     if not session.get('authenticated'):
         return '0'
@@ -582,7 +611,7 @@ def sticky():
 
         return '2'
 
-@app.route('/delete', methods=['GET', 'POST'])
+@app.route('/delete', methods=['POST'])
 def delete():
     if not session.get('authenticated'):
         return '0'
@@ -606,7 +635,7 @@ def delete():
 
         return '2'
 
-@app.route('/unsticky', methods=['GET', 'POST'])
+@app.route('/unsticky', methods=['POST'])
 def unsticky():
     if not session.get('authenticated'):
         return '0'
@@ -670,7 +699,6 @@ def add_mod():
                 mod_html += obj.html()
 
             return mod_html
-
 
 @app.route('/remove_mod', methods=['POST'])
 def remove_mod():
