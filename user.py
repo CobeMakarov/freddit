@@ -107,15 +107,17 @@ class user:
             self.flairs.append(flair(fl["id"], fl["text"], fl["label_type"], fl["subfreddit_id"]))
 
     def calculate_karma(self):
-        self.db.get_cursor().execute("SELECT sum(vote_count) FROM "
-                                     "(SELECT vote_count FROM posts WHERE soft_deleted = 0 AND user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
-                                     (self.id, self.id))
+        #self.db.get_cursor().execute("SELECT sum(vote_count) FROM "
+                                     #"(SELECT vote_count FROM posts WHERE soft_deleted = 0 AND user_id = %s UNION ALL SELECT vote_count FROM comments WHERE user_id = %s) t",
+                                     #(self.id, self.id))
 
-        calculation = self.db.get_cursor().fetchone()[0]
+        #calculation = self.db.get_cursor().fetchone()[0]
+
+        calculation = self.get_comments_karma() + self.get_posts_karma()
 
         if calculation is None:
             calculation = 0
-        #ok so we need to get the sum of posts.vote_count + the sum of comments.vote_count and combine them using joins
+
         return calculation
 
     def vote(self, id, vote, is_post):
@@ -349,14 +351,14 @@ class user:
         self.karma = self.calculate_karma()
 
     def get_comments_karma(self):
-        self.db.get_cursor().execute("Select sum(vote_count) from comments where user_id = %s", (self.id, ))
+        self.db.get_cursor().execute("SELECT sum(vote_count) FROM comments WHERE user_id = %s", (self.id, ))
 
         comments_votes_sum = self.db.get_cursor().fetchone()[0]
 
         return comments_votes_sum
         
     def get_posts_karma(self):
-        self.db.get_cursor().execute("Select sum(vote_count) from posts where user_id = %s", (self.id, ))
+        self.db.get_cursor().execute("SELECT sum(vote_count) FROM posts WHERE user_id = %s AND soft_deleted = 0", (self.id, ))
 
         posts_votes_sum = self.db.get_cursor().fetchone()[0]
 
