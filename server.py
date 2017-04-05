@@ -119,12 +119,10 @@ def authenticate():
             session['authenticated'] = True
             return '1'
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('frontpage'))
-
 
 @app.route('/fr')
 def empty_sub():
@@ -206,7 +204,6 @@ def render_sub_settings(id=None):
         return render_template('subfreddit_settings.html', client=client, subfreddits=client.subfreddits,
                                sub=sub, page_title='Subfreddit Settings for ' + sub.title,
                                is_owner=sub.is_owner(client.id), misc=misc)
-
 
 @app.route('/fr/subscribe/<id>')
 def subscribe(id=None):
@@ -514,7 +511,7 @@ def edit():
         p = post_obj(id, db)
 
         if p.user_id == client.id or client.is_mod(p.subfreddit) or client.admin:
-            if p.media_url is not None:
+            if p.media_url is not None and len(p.media_url) >= 1:
                 return '0'
 
             if text == p.post_text:

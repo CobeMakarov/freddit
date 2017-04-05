@@ -70,8 +70,8 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <button class="btn btn-link" style="padding: 0;">{{ misc.get_objs_key("parent", comment.id, comment_list)|length }} responses</button> |
-                            <button class="btn btn-link show_response_form" id="{{ comment.id }}" style="padding: 0;">Respond</button>
+                            <button class="btn btn-link" style="padding: 0;">{{ misc.get_objs_key("parent", comment.id, comment_list)|length }} responses</button> /
+                            <button class="btn btn-link show_response_form" id="{{ comment.id }}" style="padding: 0;">respond</button>
 
                             <div class="form-group response_form" id="{{ comment.id }}" style="display:none;">
                                 <textarea class="form-control response_text" rows="3" id="{{ comment.id }}"></textarea>
@@ -83,7 +83,7 @@
 
                             {% if is_mod %}
                             <div class="pull-right">
-                                <button class="btn btn-link edit_comment" id="{{ comment.id }}" style="padding: 0;">Edit</button> |
+                                <button class="btn btn-link edit_comment" id="{{ comment.id }}" style="padding: 0;">Edit</button>
                                 <button class="btn btn-link delete_comment" id="{{ comment.id }}" style="padding: 0;">Delete</button>
                             </div>
                             <div class="clearfix"></div>
@@ -185,8 +185,8 @@
                     {% endif %}
                 </div>
                 <div class="panel-footer">
-                    <button type="button" class="btn btn-link" style="padding: 0;">{{ post.comments|length }} responses</button> |
-                    <button type="button" class="btn btn-link show_post_response_form" id="{{ post.id }}" style="padding: 0;">Respond</button>
+                    <button type="button" class="btn btn-link" style="padding: 0;">{{ post.comments|length }} responses</button> /
+                    <button type="button" class="btn btn-link show_post_response_form" id="{{ post.id }}" style="padding: 0;">respond</button>
 
                     <div class="form-group post_response_form" id="{{ post.id }}" style="display:none;">
                         <textarea class="form-control post_response_text" rows="3" id="{{ post.id }}"></textarea>
@@ -204,11 +204,22 @@
                         <div class="clearfix"></div>
                     </div>
 
-                    {% if is_mod %}
+                    {% if (is_mod or client.admin) and not post.user_id == client.id %}
                         <div class="pull-right">
                             <button class="btn btn-link edit_post" id="{{ post.id }}" style="padding: 0;">Edit</button>
                             <button class="btn btn-link sticky_post" id="{{ post.id }}" style="padding: 0;">Sticky</button>
                             <button class="btn btn-link delete_post" id="{{ post.id }}" style="padding: 0;">Delete</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    {% endif %}
+
+                    {% if post.user_id == client.id %}
+                        <div class="pull-right">
+                            <button class="btn btn-link edit_post" id="{{ post.id }}" style="padding: 0;">Edit</button>
+                            {% if is_mod or client.admin %}
+                            <button class="btn btn-link sticky_post" id="{{ post.id }}" style="padding: 0;">Sticky</button>
+                            <button class="btn btn-link delete_post" id="{{ post.id }}" style="padding: 0;">Delete</button>
+                            {% endif %}
                         </div>
                         <div class="clearfix"></div>
                     {% endif %}
