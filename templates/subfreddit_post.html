@@ -48,7 +48,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">
                                 {% if client.get_flair(sub.id) is not none %}
-                                <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a> &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }}
+                                <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a> {{ comment.user.get_flair(sub.id).simple_html()|safe }}
                                 {% else %}
                                 <a href="{{ url_for('render_user', name=comment.user.username) }}">{{ comment.user.username }}</a>
                                 {% endif %}
@@ -315,8 +315,8 @@
                     <b>moderators</b> <br />
                     {% for mod in sub.moderators %}
                     <div style="padding-bottom: 3%">
-                        {% if client.get_flair(sub.id) is not none %}
-                        <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a> &nbsp; {{ client.get_flair(sub.id).simple_html()|safe }}
+                        {% if mod.flair is not none %}
+                        <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a> &nbsp; {{ mod.flair.simple_html()|safe }}
                         {% else %}
                         <a href="{{ url_for('render_user', name=mod.username) }}">{{ mod.username }}</a>
                         {% endif %}

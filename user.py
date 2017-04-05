@@ -355,12 +355,18 @@ class user:
 
         comments_votes_sum = self.db.get_cursor().fetchone()[0]
 
+        if comments_votes_sum is None:
+            comments_votes_sum = 0
+
         return comments_votes_sum
         
     def get_posts_karma(self):
         self.db.get_cursor().execute("SELECT sum(vote_count) FROM posts WHERE user_id = %s AND soft_deleted = 0", (self.id, ))
 
         posts_votes_sum = self.db.get_cursor().fetchone()[0]
+
+        if posts_votes_sum is None:
+            posts_votes_sum = 0
 
         return posts_votes_sum
 
